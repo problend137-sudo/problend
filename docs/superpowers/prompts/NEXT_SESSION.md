@@ -1,4 +1,4 @@
-# Next Session Prompt: ProBlend Digital OS Task 3
+# Next Session Prompt: ProBlend Digital OS Task 4
 
 Paste this prompt into the next Codex session.
 
@@ -12,64 +12,58 @@ Do not try to one-shot the whole product.
 
 ## Latest Completed Work
 
-- Latest completed implementation commit hash when this prompt was written: `becff82d24e5b80f9ded001406f95aa2ff7411a2`
-- Completed task: `Task 2: Supabase Schema, Drizzle Client, And Data Access Boundary`
-- Commit message: `feat: add digital OS database schema`
-- Previous completed implementation commit: `82ba1ed016b31671489685ccf344c403697eeaba`
+- Current branch when this prompt was written: `codex/task-3-forecasting-engine`
+- Latest completed implementation commit hash when this prompt was written: `f51f679b1c9f6e91fff697cb4948cc70c0f7f9b9`
+- Completed task: `Task 3: Forecasting Engine And Opportunity Scoring`
+- Commit message: `feat: add configurable forecasting and scoring engine`
+- Previous completed implementation commit: `becff82d24e5b80f9ded001406f95aa2ff7411a2`
 
-## What Changed In Task 2
+## What Changed In Task 3
 
 Created:
 
-- `drizzle.config.ts`
-- `src/db/client.ts`
-- `src/db/schema.ts`
-- `src/db/queries/admin.ts`
-- `src/db/queries/analytics.ts`
-- `src/db/queries/contacts.ts`
-- `src/db/queries/forecasts.ts`
-- `src/db/queries/opportunities.ts`
-- `src/db/queries/waitlists.ts`
-- `src/tests/db-query-boundary.test.ts`
-- `supabase/migrations/20260605181328_initial_digital_os_schema.sql`
+- `src/features/forecasting/types.ts`
+- `src/features/forecasting/schemas.ts`
+- `src/features/forecasting/assumptions.ts`
+- `src/features/forecasting/engine.ts`
+- `src/features/forecasting/scoring.ts`
+- `src/tests/features/forecasting-engine.test.ts`
+- `src/tests/features/opportunity-scoring.test.ts`
 
-Task 2 intentionally did not implement public pages, admin auth UI, public forms, forecasting engine logic, dashboards, exports, or later route behavior.
+Task 3 intentionally did not implement public pages, admin auth, public forms/actions, forecast persistence, database writes, dashboard UI, exports, migrations, or later route behavior.
 
-## Task 2 Implementation Notes
+## Task 3 Implementation Notes
 
-- The migration was created with `npx supabase migration new initial_digital_os_schema`.
-- The schema creates the initial Digital OS tables for admin users/sessions/login attempts, audit/activity/analytics logs, contact submissions, waitlist entries, opportunities/posts/applications/events, forecast configs/config versions/runs, calculator submissions, opportunity scores, and case studies.
-- The migration installs `pgcrypto` and `citext` in the `extensions` schema, enables RLS on all new public tables, revokes table access from `anon` and `authenticated`, and grants table DML to `service_role`.
-- The migration includes explicit FK indexes, key list/status indexes, a single-active forecast config partial unique index, positive numeric checks, JSON object checks for JSONB object payloads, and a named unique constraint for `(forecast_config_id, version_number)`.
-- `src/db/schema.ts` mirrors the SQL schema with Drizzle table definitions and select/insert types.
-- Query modules provide focused Drizzle-only helpers and do not import React, Next route modules, UI code, or forecasting logic.
-- `updateOpportunityStatus` writes an opportunity event transactionally so the `adminUserId` argument is not ignored.
-- A small TDD test file was added despite the original Task 2 file list because this session explicitly required TDD for data-access boundary behavior.
+- Forecasting and scoring are pure deterministic TypeScript modules.
+- `calculateForecast(input, assumptions)` receives all forecast assumptions as an argument and does not import `testForecastAssumptions` or any database/config/env module.
+- A pre-implementation review sub-agent flagged hidden constants in the plan sample. To preserve the guardrail, Task 3 added a `calculation` section to `ForecastAssumptions` for days per month, minimum operating-hour multiplier, opportunity-score weights, and confidence weights.
+- `testForecastAssumptions` is present only for tests and later seed data. Runtime flows must fetch active persisted assumptions from `forecast_config_versions` in later tasks.
+- Forecast reasoning includes venue and geography multipliers, conversion and repeat rates, operating-hour multiplier, raw demand, machine capacity, revenue per transaction, and capacity-cap explanation when applicable.
+- Opportunity scoring returns a deterministic score, rating, confidence, full `factorBreakdown`, and concise reasoning.
+- Zod schemas were added for forecast inputs, assumptions, outputs, opportunity score inputs, and opportunity score outputs.
+- The final review sub-agent found no blocking issues and cleared the Task 3 files for commit. Non-blocking notes: scoring reasoning narrates 4 of 8 factors while `factorBreakdown` contains all factors; `productMix` validates individual probabilities but does not enforce sum-to-1 because the engine does not consume it yet.
 
-## Verification From Task 2
+## Verification From Task 3
 
-Commands run in the Task 2 session:
+Commands run in the Task 3 session:
 
-- `npx supabase --version`: PASS. CLI version `2.105.0`.
-- `npx supabase projects list`: PASS. Linked project row showed project ref `tueqoqusbxeldxnnarlv`, org `xgejdxtkxjnrwdnocjzn`, name `problend`, region `South Asia (Mumbai)`.
-- `npx supabase migration new initial_digital_os_schema`: PASS. Created `supabase/migrations/20260605181328_initial_digital_os_schema.sql`.
-- TDD red check, `npm run test` before adding `src/db`: FAIL as expected because `@/db/queries/admin` did not exist.
-- TDD green check, `npm run test` after adding the DB boundary: PASS, 2 test files and 4 tests.
-- `npx supabase start`: BLOCKED/FAIL. Docker is not available locally: Supabase CLI reported it could not connect to the Docker daemon. Additional checks showed `docker` was not on PATH and `open -a Docker` could not find Docker Desktop.
-- `npx supabase db reset`: BLOCKED/FAIL for the same missing Docker prerequisite before the migration could be applied locally.
-- Final `npm run typecheck`: PASS.
-- Final `npm run lint`: PASS.
-- Final `npm run test`: PASS, 2 test files and 4 tests.
-- Final `npm run build`: PASS. Build output still contains only `/404`, which is expected because Tasks 1-2 have not created public pages.
+- TDD red check, `npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts`: FAIL as expected because `@/features/forecasting/assumptions` and `@/features/forecasting/scoring` did not exist.
+- TDD green check, `npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts`: PASS, 2 test files and 6 tests.
+- Final pre-commit targeted check, `npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts`: PASS, 2 test files and 6 tests.
+- Final pre-commit `npm run typecheck`: PASS.
+- `npm run lint`: PASS.
+- Full `npm run test`: PASS, 4 test files and 10 tests.
+- `npm run build`: PASS. Build output still contains only `/404`, which is expected because Tasks 1-3 have not created public pages.
 
 ## Deviations Or Notes
 
-- `src/tests/db-query-boundary.test.ts` was included in the Task 2 commit to satisfy the explicit TDD requirement for data-access boundary behavior.
-- The required Supabase local reset verification could not be completed because Docker/Docker Desktop is not installed or reachable on this machine. Do not claim the migration has been applied locally until `npx supabase start` and `npx supabase db reset` pass in a Docker-capable environment.
-- `next build` repeatedly rewrote `next-env.d.ts` from `.next/dev/types/routes.d.ts` to `.next/types/routes.d.ts`; this generated churn was restored and not committed.
-- The final review sub-agent found no blocking Task 2 issues and recommended staging the TDD test with the Task 2 files.
+- A scoped branch `codex/task-3-forecasting-engine` was created before implementation because the Superpowers workflow warns against starting implementation on `main` without explicit consent.
+- `ForecastAssumptions` intentionally includes `calculation` settings beyond the plan's sample type to avoid hidden module constants in the engine.
+- `next build` rewrote `next-env.d.ts` again; this generated churn was restored and not committed.
+- `build-web-apps:frontend-app-builder` was not applied in Task 3 because no frontend or visual files were touched.
+- `supabase:supabase` was not applied in Task 3 because no Supabase CLI/schema/migration/RLS/database work was performed.
 - No secrets were printed, invented, or committed. Nothing under `supabase/.temp` was committed.
-- No blockers remain for Task 3, because Task 3 is pure TypeScript forecasting/scoring work and should not need Supabase or Docker.
+- No blockers remain for Task 4.
 
 ## Mandatory Context For This Session
 
@@ -82,26 +76,27 @@ Read these files before editing:
 
 Begin with:
 
-`Task 3: Forecasting Engine And Opportunity Scoring`
+`Task 4: Content System, Public Routes, And Legal Pages`
 
 from:
 
 `docs/superpowers/plans/2026-06-05-problend-digital-operating-system-implementation.md`
 
-Do not implement Task 4 or any later task in this session.
+Do not implement Task 5 or any later task in this session.
 
 ## Mandatory Skills And Agents
 
 You must explicitly use:
 
 - `superpowers:subagent-driven-development` for the implementation workflow.
-- Sub-agents for independent work. For Task 3, use at least two sub-agents:
-  - One sub-agent to review the forecasting/scoring plan before implementation.
-  - One sub-agent to review the completed forecasting/scoring diff and verification evidence before finalizing.
-- `superpowers:test-driven-development` for forecasting and scoring behavior.
+- Sub-agents for independent work. For Task 4, use at least two sub-agents:
+  - One sub-agent to review the public-content/page plan before implementation.
+  - One sub-agent to review the completed public-content/page diff and verification evidence before finalizing.
+- `superpowers:test-driven-development` for the content preservation tests before writing content modules.
 - `superpowers:verification-before-completion` before claiming anything is complete.
-- `build-web-apps:frontend-app-builder` only if you touch frontend implementation or visual decisions. Task 3 should not need frontend work, so state that it was not applied if no frontend files are touched.
-- `supabase:supabase` only before Supabase CLI/schema/migration/RLS/database work. Task 3 should not need Supabase work.
+- `build-web-apps:frontend-app-builder` before implementing public visual surfaces, because Task 4 creates public pages and public layout components.
+- Browser plugin verification after starting the local app for the public route shell, unless a blocker prevents it.
+- `supabase:supabase` only before Supabase CLI/schema/migration/RLS/database work. Task 4 should not need Supabase work.
 
 If a named skill is unavailable, state that briefly and continue with the closest available workflow.
 
@@ -114,67 +109,71 @@ Keep these constraints active:
 - Typography direction remains Barlow Condensed for display and Barlow for body/UI.
 - Supabase is Mumbai project `tueqoqusbxeldxnnarlv`.
 - No public visitor accounts. V1 uses built-in admin auth later, not Clerk/Auth0.
-- Forecasting/scoring logic must be transparent and deterministic.
-- Forecast outputs must be reproducible from stored inputs, outputs, assumptions, version, timestamp, and reasoning once later persistence tasks wire the engine to the database.
-- Task 3 must not read hardcoded production constants from hidden module state. The engine receives supplied assumptions.
+- Public pages may show ProBlend product story, flavours, machine capabilities, hygiene, automation, cashless payments, GPRS tracking, inventory monitoring, analytics as a partner benefit, placement models, and contact details.
+- Public pages must not show private scoring configuration, forecast assumption management, admin export/audit tooling, or internal route mechanics.
+- Do not migrate Wix demo-store products as real ProBlend products.
 
-## Task 3 Scope
+## Task 4 Scope
 
 Implement only:
 
-`Task 3: Forecasting Engine And Opportunity Scoring`
+`Task 4: Content System, Public Routes, And Legal Pages`
 
 Expected output of this session:
 
-- `src/features/forecasting/types.ts`
-- `src/features/forecasting/schemas.ts`
-- `src/features/forecasting/assumptions.ts`
-- `src/features/forecasting/engine.ts`
-- `src/features/forecasting/scoring.ts`
-- `src/tests/features/forecasting-engine.test.ts`
-- `src/tests/features/opportunity-scoring.test.ts`
+- `src/content/site.ts`
+- `src/content/products.ts`
+- `src/content/legal.ts`
+- `src/content/case-studies.ts`
+- `src/components/public/PublicHeader.tsx`
+- `src/components/public/PublicFooter.tsx`
+- `src/components/public/PolicyPage.tsx`
+- Public route pages under `src/app/(public)/`
+- `src/tests/content/site-content.test.ts`
 
-Do not implement content/public routes, admin auth, forms/actions, dashboard UI, exports, database writes, or Task 4+ behavior in this session.
+Do not implement public forms/actions, placement-estimate persistence, admin auth, dashboards, database writes, exports, migrations, or Task 5+ behavior in this session.
 
 ## Required Execution Flow
 
-1. Read the mandatory docs and confirm Task 3 scope.
+1. Read the mandatory docs and confirm Task 4 scope.
 2. Check git status. Do not overwrite unrelated user changes.
 3. Use the required skills and sub-agents.
-4. Write the Task 3 tests first:
+4. Write `src/tests/content/site-content.test.ts` first from the Task 4 plan.
+5. Run:
 
 ```bash
-npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts
+npm run test -- src/tests/content/site-content.test.ts
 ```
 
-Expected before implementation: tests fail because `calculateForecast`, `testForecastAssumptions`, and `scoreOpportunity` do not exist.
+Expected before implementation: tests fail because `@/content/site` and `@/content/products` do not exist.
 
-5. Implement only the Task 3 forecasting/scoring files from the implementation plan.
-6. Run:
+6. Implement only the Task 4 content modules, public layout/header/footer/policy component, and public route pages from the implementation plan.
+7. Run:
 
 ```bash
-npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts
+npm run test -- src/tests/content/site-content.test.ts
 npm run typecheck
+npm run build
 ```
 
-7. Also run foundation checks if Task 3 touches shared config or package files:
+8. Start the dev server and use Browser/in-app browser verification for the created public pages. Confirm at minimum `/`, `/about`, `/product-offerings`, `/business-solutions`, `/contact`, and one legal page render without exposing private admin/scoring/export/audit mechanics.
+9. Run additional foundation checks if Task 4 touches shared config or package files:
 
 ```bash
 npm run lint
 npm run test
-npm run build
 ```
 
-8. Fix any failures inside Task 3 scope.
-9. Commit Task 3 with:
+10. Fix any failures inside Task 4 scope.
+11. Commit Task 4 with:
 
 ```bash
-git add src/features/forecasting src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts
-git commit -m "feat: add configurable forecasting and scoring engine"
+git add src/content src/components/public src/app/\(public\) src/tests/content/site-content.test.ts
+git commit -m "feat: rebuild ProBlend public content structure"
 ```
 
-10. Create or overwrite `docs/superpowers/prompts/NEXT_SESSION.md` with the next paste-ready prompt, including what actually happened, verification status, commit hash or hashes, blockers/deviations, and the next implementation-plan task.
-11. Commit the handoff file with:
+12. Create or overwrite `docs/superpowers/prompts/NEXT_SESSION.md` with the next paste-ready prompt, including what actually happened, verification status, commit hash or hashes, blockers/deviations, and the next implementation-plan task.
+13. Commit the handoff file with:
 
 ```bash
 git add docs/superpowers/prompts/NEXT_SESSION.md
