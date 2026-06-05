@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { problendAssets } from "@/content/assets";
 import { caseStudies } from "@/content/case-studies";
 import { legalPages } from "@/content/legal";
 import { contactDetails, preservedCopy, publicNavigation } from "@/content/site";
@@ -27,7 +28,24 @@ describe("ProBlend content preservation", () => {
     ]);
     expect(products).toHaveLength(4);
     expect(new Set(products.map((product) => product.slug)).size).toBe(products.length);
-    expect(products.map((product) => product.name).join(" ")).not.toMatch(/golf|baseball|vase|tote|chair|serum/i);
+
+    const migratedProductText = products
+      .flatMap((product) => [product.name, product.description, product.slug, ...product.tags])
+      .join(" ");
+    expect(migratedProductText).not.toMatch(
+      /golf|baseball|cap|vase|tote|bag|eyeglasses|serum|diffuser|chair|t-shirt|sweater/i
+    );
+  });
+
+  it("uses local ProBlend website imagery instead of hotlinked or placeholder public assets", () => {
+    expect(Object.values(problendAssets)).toHaveLength(8);
+
+    for (const asset of Object.values(problendAssets)) {
+      expect(asset.src).toMatch(/^\/images\/problend\/.+\.(jpg|jpeg|png|svg)$/);
+      expect(asset.alt.length).toBeGreaterThan(10);
+    }
+
+    expect(products.every((product) => product.visual.src.startsWith("/images/problend/"))).toBe(true);
   });
 
   it("keeps public navigation close to the original website", () => {

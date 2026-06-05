@@ -1,28 +1,30 @@
 import type { Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { problendAssets } from "@/content/assets";
 import { publicCtas, publicNavigation } from "@/content/site";
 
 export function PublicHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--pb-border)] bg-[rgba(7,7,7,0.92)] backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-4 md:px-8">
+    <header className="sticky top-0 z-40 border-b border-[rgba(245,239,233,0.12)] bg-[rgba(0,0,0,0.94)] backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-3 md:px-8">
         <Link className="group flex items-center gap-3" href={"/" as Route}>
-          <span className="grid size-9 place-items-center border border-[var(--pb-blush)] bg-[var(--pb-cream)] font-[var(--font-barlow-condensed)] text-xl font-bold text-[var(--pb-black)]">
-            PB
-          </span>
-          <span className="leading-none">
-            <span className="block font-[var(--font-barlow-condensed)] text-2xl font-semibold text-[var(--pb-cream)]">
-              ProBlend
-            </span>
-            <span className="block text-xs font-medium text-[var(--pb-muted)]">Nutrition on demand</span>
-          </span>
+          <Image
+            alt={problendAssets.logo.alt}
+            className="object-contain transition duration-200 group-hover:opacity-85"
+            height={40}
+            priority
+            src={problendAssets.logo.src}
+            width={110}
+          />
+          <span className="sr-only">ProBlend home</span>
         </Link>
 
         <nav aria-label="Primary navigation" className="hidden items-center gap-5 lg:flex">
           {publicNavigation.map((item) => (
             <Link
-              className="text-sm font-medium text-[var(--pb-muted)] underline-offset-4 transition hover:text-[var(--pb-cream)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--pb-blush)]"
+              className="text-sm font-semibold text-[var(--pb-muted)] underline-offset-8 transition duration-200 hover:text-[var(--pb-cream)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--pb-gold)]"
               href={item.href as Route}
               key={item.href}
             >
@@ -32,10 +34,10 @@ export function PublicHeader() {
         </nav>
 
         <Link
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--pb-cream)] underline underline-offset-4 transition hover:text-[var(--pb-blush)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-blush)]"
-          href={publicCtas.submitOpportunity.href as Route}
+          className="inline-flex min-h-10 items-center gap-2 border border-[rgba(245,239,233,0.34)] px-4 text-sm font-semibold text-[var(--pb-cream)] transition duration-200 hover:border-[var(--pb-gold)] hover:text-[var(--pb-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-gold)]"
+          href={publicCtas.contact.href as Route}
         >
-          {publicCtas.submitOpportunity.label}
+          {publicCtas.contact.label}
           <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
         </Link>
       </div>
@@ -45,7 +47,7 @@ export function PublicHeader() {
       >
         {publicNavigation.map((item) => (
           <Link
-            className="shrink-0 underline-offset-4 hover:text-[var(--pb-cream)] hover:underline"
+            className="shrink-0 font-semibold underline-offset-8 transition duration-200 hover:text-[var(--pb-cream)] hover:underline"
             href={item.href as Route}
             key={item.href}
           >
