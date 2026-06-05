@@ -7,32 +7,20 @@ This repo uses the Supabase CLI through `npx` so future agents do not need a glo
 ```bash
 npx supabase login
 npx supabase init
-npx supabase link --project-ref nivqletcxiingzvxvfjb
+npx supabase link --project-ref tueqoqusbxeldxnnarlv
 ```
 
 Current linked project:
 
-- Project ref: `nivqletcxiingzvxvfjb`
+- Project URL: `https://tueqoqusbxeldxnnarlv.supabase.co`
+- Project ref: `tueqoqusbxeldxnnarlv`
 - Organization id: `xgejdxtkxjnrwdnocjzn`
-- Region: Northeast Asia (Tokyo)
+- Region: South Asia (Mumbai)
 
-## Mumbai Requirement
+## Region
 
-ProBlend's production database should be in South Asia (Mumbai), region code `ap-south-1`.
+ProBlend's production database is in South Asia (Mumbai), region code `ap-south-1`.
 
-Supabase projects are region-bound after creation. To move from Tokyo to Mumbai, create a new project in `ap-south-1`, link this repo to the new project ref, then migrate schema/data through migrations or a controlled dump/restore.
-
-```bash
-npx supabase projects create problend-mumbai \
-  --org-id xgejdxtkxjnrwdnocjzn \
-  --region ap-south-1 \
-  --db-password "<database-password>"
-```
-
-After the Mumbai project exists:
-
-```bash
-npx supabase link --project-ref <mumbai-project-ref>
-```
+Supabase projects are region-bound after creation. If the region ever needs to change again, create a new project in the target region, link this repo to the new project ref, then migrate schema/data through migrations or a controlled dump/restore.
 
 Do not commit files under `supabase/.temp`; they are intentionally ignored.
