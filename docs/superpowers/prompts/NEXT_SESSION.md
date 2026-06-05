@@ -1,4 +1,4 @@
-# Next Session Prompt: ProBlend Digital OS Task 2
+# Next Session Prompt: ProBlend Digital OS Task 3
 
 Paste this prompt into the next Codex session.
 
@@ -12,59 +12,64 @@ Do not try to one-shot the whole product.
 
 ## Latest Completed Work
 
-- Latest completed implementation commit hash when this prompt was written: `82ba1ed016b31671489685ccf344c403697eeaba`
-- Completed task: `Task 1: Foundation, Tooling, And Base App Shell`
-- Commit message: `chore: scaffold Next.js foundation`
+- Latest completed implementation commit hash when this prompt was written: `becff82d24e5b80f9ded001406f95aa2ff7411a2`
+- Completed task: `Task 2: Supabase Schema, Drizzle Client, And Data Access Boundary`
+- Commit message: `feat: add digital OS database schema`
+- Previous completed implementation commit: `82ba1ed016b31671489685ccf344c403697eeaba`
 
-## What Changed In Task 1
+## What Changed In Task 2
 
-Created or modified:
+Created:
 
-- `.env.example`
-- `.gitignore`
-- `eslint.config.mjs`
-- `next-env.d.ts`
-- `next.config.ts`
-- `package-lock.json`
-- `package.json`
-- `playwright.config.ts`
-- `postcss.config.mjs`
-- `src/app/globals.css`
-- `src/app/layout.tsx`
-- `src/app/not-found.tsx`
-- `src/lib/env.ts`
-- `src/lib/utils.ts`
-- `src/tests/smoke.test.ts`
-- `tsconfig.json`
-- `vitest.config.ts`
+- `drizzle.config.ts`
+- `src/db/client.ts`
+- `src/db/schema.ts`
+- `src/db/queries/admin.ts`
+- `src/db/queries/analytics.ts`
+- `src/db/queries/contacts.ts`
+- `src/db/queries/forecasts.ts`
+- `src/db/queries/opportunities.ts`
+- `src/db/queries/waitlists.ts`
+- `src/tests/db-query-boundary.test.ts`
+- `supabase/migrations/20260605181328_initial_digital_os_schema.sql`
 
-Task 1 intentionally did not implement public pages, database schema, admin auth, forms, forecasting, dashboards, or Supabase migrations.
+Task 2 intentionally did not implement public pages, admin auth UI, public forms, forecasting engine logic, dashboards, exports, or later route behavior.
 
-## Verification From Task 1
+## Task 2 Implementation Notes
 
-Commands run in the Task 1 session:
+- The migration was created with `npx supabase migration new initial_digital_os_schema`.
+- The schema creates the initial Digital OS tables for admin users/sessions/login attempts, audit/activity/analytics logs, contact submissions, waitlist entries, opportunities/posts/applications/events, forecast configs/config versions/runs, calculator submissions, opportunity scores, and case studies.
+- The migration installs `pgcrypto` and `citext` in the `extensions` schema, enables RLS on all new public tables, revokes table access from `anon` and `authenticated`, and grants table DML to `service_role`.
+- The migration includes explicit FK indexes, key list/status indexes, a single-active forecast config partial unique index, positive numeric checks, JSON object checks for JSONB object payloads, and a named unique constraint for `(forecast_config_id, version_number)`.
+- `src/db/schema.ts` mirrors the SQL schema with Drizzle table definitions and select/insert types.
+- Query modules provide focused Drizzle-only helpers and do not import React, Next route modules, UI code, or forecasting logic.
+- `updateOpportunityStatus` writes an opportunity event transactionally so the `adminUserId` argument is not ignored.
+- A small TDD test file was added despite the original Task 2 file list because this session explicitly required TDD for data-access boundary behavior.
 
-- `npx supabase projects list`: PASS. The repo is linked to project ref `tueqoqusbxeldxnnarlv`, org `xgejdxtkxjnrwdnocjzn`, region `South Asia (Mumbai)`.
-- `npm install`: PASS. Created `package-lock.json`. It reported 6 moderate npm audit findings; package versions were left as the Task 1 plan specified.
-- `npx playwright install chromium`: PASS. Chromium browser binaries installed.
-- TDD red check, `npm run test` before adding `src/lib/env.ts` and `src/lib/utils.ts`: FAIL as expected with missing `@/lib/env`.
-- TDD green check, `npm run test` after adding helpers: PASS, 1 test file and 3 tests.
-- First full `npm run typecheck`: FAIL on TypeScript 6 `baseUrl` deprecation. Fixed by adding `"ignoreDeprecations": "6.0"`.
-- First full `npm run lint`: PASS with one warning about anonymous default export. Fixed by assigning the ESLint config before export.
-- First `npm run build`: FAIL because Next 16 moved `experimental.typedRoutes` to top-level `typedRoutes`, and typed route validation rejected `href="/"` while Task 1 has no home page. Fixed without adding a public page.
+## Verification From Task 2
+
+Commands run in the Task 2 session:
+
+- `npx supabase --version`: PASS. CLI version `2.105.0`.
+- `npx supabase projects list`: PASS. Linked project row showed project ref `tueqoqusbxeldxnnarlv`, org `xgejdxtkxjnrwdnocjzn`, name `problend`, region `South Asia (Mumbai)`.
+- `npx supabase migration new initial_digital_os_schema`: PASS. Created `supabase/migrations/20260605181328_initial_digital_os_schema.sql`.
+- TDD red check, `npm run test` before adding `src/db`: FAIL as expected because `@/db/queries/admin` did not exist.
+- TDD green check, `npm run test` after adding the DB boundary: PASS, 2 test files and 4 tests.
+- `npx supabase start`: BLOCKED/FAIL. Docker is not available locally: Supabase CLI reported it could not connect to the Docker daemon. Additional checks showed `docker` was not on PATH and `open -a Docker` could not find Docker Desktop.
+- `npx supabase db reset`: BLOCKED/FAIL for the same missing Docker prerequisite before the migration could be applied locally.
 - Final `npm run typecheck`: PASS.
 - Final `npm run lint`: PASS.
-- Final `npm run test`: PASS, 1 test file and 3 tests.
-- Final `npm run build`: PASS. Build output contains only `/404`, which is expected because Task 1 has no public page.
-- Browser render check via Playwright against local dev server: PASS. `GET /missing-task-1-check` returned 404 with the intended ProBlend not-found heading, `Return home` link, Barlow font, and gradient shell.
+- Final `npm run test`: PASS, 2 test files and 4 tests.
+- Final `npm run build`: PASS. Build output still contains only `/404`, which is expected because Tasks 1-2 have not created public pages.
 
 ## Deviations Or Notes
 
-- `next.config.ts` uses top-level `typedRoutes: true` instead of `experimental.typedRoutes` because Next 16.2.7 requires the new location.
-- `tsconfig.json` uses `jsx: "react-jsx"` and includes `.next/dev/types/**/*.ts` because Next updated the config during build.
-- `next-env.d.ts` was staged with Task 1 even though the written `git add` list omitted it. A required post-diff sub-agent recommended staging it as the standard generated Next type shim.
-- `src/app/not-found.tsx` uses a typed route cast for `/` because Task 1 intentionally has no home page. The link will still land on a 404 until a later public-page task creates `/`.
-- No blockers remain from Task 1.
+- `src/tests/db-query-boundary.test.ts` was included in the Task 2 commit to satisfy the explicit TDD requirement for data-access boundary behavior.
+- The required Supabase local reset verification could not be completed because Docker/Docker Desktop is not installed or reachable on this machine. Do not claim the migration has been applied locally until `npx supabase start` and `npx supabase db reset` pass in a Docker-capable environment.
+- `next build` repeatedly rewrote `next-env.d.ts` from `.next/dev/types/routes.d.ts` to `.next/types/routes.d.ts`; this generated churn was restored and not committed.
+- The final review sub-agent found no blocking Task 2 issues and recommended staging the TDD test with the Task 2 files.
+- No secrets were printed, invented, or committed. Nothing under `supabase/.temp` was committed.
+- No blockers remain for Task 3, because Task 3 is pure TypeScript forecasting/scoring work and should not need Supabase or Docker.
 
 ## Mandatory Context For This Session
 
@@ -77,77 +82,28 @@ Read these files before editing:
 
 Begin with:
 
-`Task 2: Supabase Schema, Drizzle Client, And Data Access Boundary`
+`Task 3: Forecasting Engine And Opportunity Scoring`
 
 from:
 
 `docs/superpowers/plans/2026-06-05-problend-digital-operating-system-implementation.md`
 
-Do not implement Task 3 or any later task in this session.
+Do not implement Task 4 or any later task in this session.
 
 ## Mandatory Skills And Agents
 
 You must explicitly use:
 
 - `superpowers:subagent-driven-development` for the implementation workflow.
-- Sub-agents for independent work. For Task 2, use at least two sub-agents:
-  - One sub-agent to review the Supabase schema and data-access plan before editing.
-  - One sub-agent to review the completed migration, Drizzle schema/client/query diff, and verification evidence before finalizing.
-- `superpowers:test-driven-development` for testable behavior and data-access boundary behavior.
+- Sub-agents for independent work. For Task 3, use at least two sub-agents:
+  - One sub-agent to review the forecasting/scoring plan before implementation.
+  - One sub-agent to review the completed forecasting/scoring diff and verification evidence before finalizing.
+- `superpowers:test-driven-development` for forecasting and scoring behavior.
 - `superpowers:verification-before-completion` before claiming anything is complete.
-- `supabase:supabase` before any Supabase CLI, schema, migration, RLS, or database work. Follow its guidance to check relevant current Supabase docs/changelog before schema changes.
-- `build-web-apps:frontend-app-builder` before any frontend implementation or visual decision. Task 2 should not need frontend implementation, so state that it was not applied beyond preserving Task 1 app-shell constraints if no frontend files are touched.
+- `build-web-apps:frontend-app-builder` only if you touch frontend implementation or visual decisions. Task 3 should not need frontend work, so state that it was not applied if no frontend files are touched.
+- `supabase:supabase` only before Supabase CLI/schema/migration/RLS/database work. Task 3 should not need Supabase work.
 
 If a named skill is unavailable, state that briefly and continue with the closest available workflow.
-
-## Supabase Credentials And Project
-
-Use the existing Supabase CLI setup through `npx`; do not assume a global `supabase` binary.
-
-Project details:
-
-- Project URL: `https://tueqoqusbxeldxnnarlv.supabase.co`
-- Project ref: `tueqoqusbxeldxnnarlv`
-- Organization id: `xgejdxtkxjnrwdnocjzn`
-- Region: `South Asia (Mumbai)`
-- Region code: `ap-south-1`
-
-Verify linkage with:
-
-```bash
-npx supabase projects list
-```
-
-If the repo is not linked, relink with:
-
-```bash
-npx supabase link --project-ref tueqoqusbxeldxnnarlv
-```
-
-Do not print, commit, or invent Supabase secrets. Do not expose service-role keys. If a database password, `DATABASE_URL`, or production secret is required and unavailable, ask the user for it instead of guessing.
-
-Do not commit anything under `supabase/.temp`; it is intentionally ignored.
-
-## Task 2 Scope
-
-Implement only:
-
-`Task 2: Supabase Schema, Drizzle Client, And Data Access Boundary`
-
-Expected output of this session:
-
-- One Supabase migration in `supabase/migrations/`, created with `npx supabase migration new initial_digital_os_schema`
-- `drizzle.config.ts`
-- `src/db/client.ts`
-- `src/db/schema.ts`
-- `src/db/queries/admin.ts`
-- `src/db/queries/analytics.ts`
-- `src/db/queries/contacts.ts`
-- `src/db/queries/forecasts.ts`
-- `src/db/queries/opportunities.ts`
-- `src/db/queries/waitlists.ts`
-
-Do not implement public pages, admin auth UI, public forms, forecasting engine logic, dashboards, exports, or later-route behavior in this session.
 
 ## Product Guardrails
 
@@ -158,35 +114,50 @@ Keep these constraints active:
 - Typography direction remains Barlow Condensed for display and Barlow for body/UI.
 - Supabase is Mumbai project `tueqoqusbxeldxnnarlv`.
 - No public visitor accounts. V1 uses built-in admin auth later, not Clerk/Auth0.
+- Forecasting/scoring logic must be transparent and deterministic.
+- Forecast outputs must be reproducible from stored inputs, outputs, assumptions, version, timestamp, and reasoning once later persistence tasks wire the engine to the database.
+- Task 3 must not read hardcoded production constants from hidden module state. The engine receives supplied assumptions.
+
+## Task 3 Scope
+
+Implement only:
+
+`Task 3: Forecasting Engine And Opportunity Scoring`
+
+Expected output of this session:
+
+- `src/features/forecasting/types.ts`
+- `src/features/forecasting/schemas.ts`
+- `src/features/forecasting/assumptions.ts`
+- `src/features/forecasting/engine.ts`
+- `src/features/forecasting/scoring.ts`
+- `src/tests/features/forecasting-engine.test.ts`
+- `src/tests/features/opportunity-scoring.test.ts`
+
+Do not implement content/public routes, admin auth, forms/actions, dashboard UI, exports, database writes, or Task 4+ behavior in this session.
 
 ## Required Execution Flow
 
-1. Read the mandatory docs and confirm Task 2 scope.
+1. Read the mandatory docs and confirm Task 3 scope.
 2. Check git status. Do not overwrite unrelated user changes.
 3. Use the required skills and sub-agents.
-4. Run:
+4. Write the Task 3 tests first:
 
 ```bash
-npx supabase --version
-npx supabase projects list
+npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts
 ```
 
-5. Create the migration with:
+Expected before implementation: tests fail because `calculateForecast`, `testForecastAssumptions`, and `scoreOpportunity` do not exist.
+
+5. Implement only the Task 3 forecasting/scoring files from the implementation plan.
+6. Run:
 
 ```bash
-npx supabase migration new initial_digital_os_schema
-```
-
-6. Write only the Task 2 migration, Drizzle config, Drizzle client/schema, and query modules.
-7. Run the Task 2 verification commands:
-
-```bash
-npx supabase start
-npx supabase db reset
+npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts
 npm run typecheck
 ```
 
-8. Also rerun foundation checks if Task 2 touches shared config or package files:
+7. Also run foundation checks if Task 3 touches shared config or package files:
 
 ```bash
 npm run lint
@@ -194,16 +165,16 @@ npm run test
 npm run build
 ```
 
-9. Fix any failures inside Task 2 scope.
-10. Commit Task 2 with:
+8. Fix any failures inside Task 3 scope.
+9. Commit Task 3 with:
 
 ```bash
-git add supabase/migrations drizzle.config.ts src/db
-git commit -m "feat: add digital OS database schema"
+git add src/features/forecasting src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts
+git commit -m "feat: add configurable forecasting and scoring engine"
 ```
 
-11. Create or overwrite `docs/superpowers/prompts/NEXT_SESSION.md` with the next paste-ready prompt, including what actually happened, verification status, commit hash or hashes, blockers/deviations, and the next implementation-plan task.
-12. Commit the handoff file with:
+10. Create or overwrite `docs/superpowers/prompts/NEXT_SESSION.md` with the next paste-ready prompt, including what actually happened, verification status, commit hash or hashes, blockers/deviations, and the next implementation-plan task.
+11. Commit the handoff file with:
 
 ```bash
 git add docs/superpowers/prompts/NEXT_SESSION.md
