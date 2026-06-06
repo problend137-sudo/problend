@@ -6,6 +6,8 @@ import {
   forecastConfigVersions,
   forecastRuns,
   opportunityScores,
+  calculatorSubmissions,
+  type NewCalculatorSubmission,
   type NewForecastRun,
   type NewOpportunityScore
 } from "@/db/schema";
@@ -24,6 +26,11 @@ export async function getActiveForecastConfigVersion() {
 
 export async function createForecastRun(input: NewForecastRun) {
   const [record] = await db.insert(forecastRuns).values(input).returning();
+  return record;
+}
+
+export async function createCalculatorSubmission(input: NewCalculatorSubmission) {
+  const [record] = await db.insert(calculatorSubmissions).values(input).returning();
   return record;
 }
 

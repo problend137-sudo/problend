@@ -28,7 +28,13 @@ const expectedExports = {
   },
   forecasts: {
     module: forecastQueries,
-    names: ["createForecastRun", "createOpportunityScore", "getActiveForecastConfigVersion", "listForecastRuns"]
+    names: [
+      "createCalculatorSubmission",
+      "createForecastRun",
+      "createOpportunityScore",
+      "getActiveForecastConfigVersion",
+      "listForecastRuns"
+    ]
   },
   opportunities: {
     module: opportunityQueries,

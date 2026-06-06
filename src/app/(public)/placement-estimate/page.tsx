@@ -1,58 +1,33 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { PublicLink } from "@/components/public/PublicLink";
+import { PlacementEstimateForm } from "@/components/public/PlacementEstimateForm";
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { problendAssets } from "@/content/assets";
-import { publicCtas, routeMetadata } from "@/content/site";
+import { routeMetadata } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.placementEstimate;
-
-const estimateInputs = [
-  "Venue type and city",
-  "Approximate daily footfall",
-  "Operating hours",
-  "Available space and electricity readiness",
-  "Preferred commercial model"
-] as const;
 
 export default function PlacementEstimatePage() {
   return (
     <main>
       <PublicPageHero
-        body="Prepare the basic venue information ProBlend needs to discuss machine placement fit for gyms, offices, campuses, residences, and other high-footfall locations."
+        body="Estimate demand, revenue range, machine count, score, and confidence for a gym, campus, office, residence, or other high-footfall location."
         image={problendAssets.heroGymMachine}
         imagePosition="64% center"
-        primaryLink={publicCtas.submitOpportunity}
-        secondaryLink={publicCtas.contact}
+        primaryLink={{ href: "#placement-estimate-form", label: "Start estimate" }}
         title="Run Placement Estimate"
       />
 
       <section className="bg-[var(--pb-oled)] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1fr]">
-          <figure className="relative min-h-[28rem] overflow-hidden border-y border-[rgba(245,239,233,0.18)]">
-            <Image
-              alt={problendAssets.machineCloseup.alt}
-              className="object-cover"
-              fill
-              sizes="(min-width: 1024px) 42vw, 100vw"
-              src={problendAssets.machineCloseup.src}
-            />
-          </figure>
-          <div>
-            <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Details to prepare.
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 grid gap-5 border-y border-[var(--pb-line)] py-8 lg:grid-cols-[0.72fr_1.28fr]">
+            <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-none text-[var(--pb-cream)] md:text-7xl">
+              Live placement calculator.
             </h2>
-            <div className="mt-8 grid gap-3">
-              {estimateInputs.map((item) => (
-                <p className="border-b border-[rgba(245,239,233,0.16)] pb-3 text-base text-[var(--pb-muted)]" key={item}>
-                  {item}
-                </p>
-              ))}
-            </div>
-            <div className="mt-8">
-              <PublicLink href={publicCtas.submitOpportunity.href} label={publicCtas.submitOpportunity.label} />
-            </div>
+            <p className="max-w-3xl text-base leading-7 text-[var(--pb-muted)] md:text-lg">
+              Share the venue basics ProBlend needs for an early placement read. The estimate is directional and helps frame the next conversation with the ProBlend team.
+            </p>
           </div>
+          <PlacementEstimateForm />
         </div>
       </section>
     </main>

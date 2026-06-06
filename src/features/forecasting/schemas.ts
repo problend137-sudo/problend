@@ -24,6 +24,34 @@ const nonNegativeFiniteNumberSchema = z.number().finite().nonnegative();
 const probabilitySchema = z.number().finite().min(0).max(1);
 const boundedScoreSchema = z.number().finite().min(0).max(100);
 const textSchema = z.string().trim().min(1);
+const optionalTextSchema = (maxLength = 220) =>
+  z.preprocess(
+    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    z.string().trim().max(maxLength).optional()
+  );
+const honeypotSchema = z.union([z.literal(""), z.undefined()]).optional();
+
+const numberFromForm = (schema: z.ZodNumber) =>
+  z.preprocess((value) => {
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return value;
+    }
+
+    const parsed = Number(trimmed);
+    return Number.isNaN(parsed) ? value : parsed;
+  }, schema);
+
+const sourcePathSchema = (fallback: string) =>
+  z.preprocess(
+    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    z.string().trim().min(1).max(220).default(fallback)
+  );
 
 export const forecastInputSchema = z.object({
   venueType: venueTypeSchema,
@@ -100,6 +128,24 @@ export const forecastOutputSchema = z.object({
   reasoning: z.array(textSchema).min(1)
 });
 
+export const placementEstimateInputSchema = z.object({
+  venueType: venueTypeSchema,
+  dailyFootfall: numberFromForm(nonNegativeFiniteNumberSchema.int()),
+  operatingHours: numberFromForm(positiveFiniteNumberSchema.max(24)),
+  locationType: locationTypeSchema,
+  placementArea: textSchema.max(180),
+  city: textSchema.max(140),
+  state: textSchema.max(140),
+  accessQuality: textSchema.max(120),
+  infrastructureReadiness: infrastructureReadinessSchema,
+  commercialIntent: commercialIntentSchema,
+  contactName: optionalTextSchema(180),
+  email: optionalTextSchema(220).pipe(z.string().email("Enter a valid email address.").max(220).optional()),
+  phone: optionalTextSchema(80),
+  sourcePath: sourcePathSchema("/placement-estimate"),
+  honeypot: honeypotSchema
+});
+
 export const opportunityScoreInputSchema = z.object({
   venueType: venueTypeSchema,
   dailyFootfall: nonNegativeFiniteNumberSchema,
@@ -119,3 +165,5 @@ export const opportunityScoreOutputSchema = z.object({
   factorBreakdown: z.record(textSchema, nonNegativeFiniteNumberSchema),
   reasoning: z.array(textSchema).min(1)
 });
+
+export type PlacementEstimateInput = z.infer<typeof placementEstimateInputSchema>;
