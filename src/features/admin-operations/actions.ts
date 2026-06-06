@@ -12,6 +12,8 @@ import {
   updateContactSubmissionStatus,
   updateOpportunityRecordStatus
 } from "@/db/queries/admin-operations";
+import { analyticsEvents, type AnalyticsEventName } from "@/features/analytics/events";
+import { trackEventAction } from "@/features/analytics/actions";
 import { requireAdmin } from "@/features/admin-auth/guards";
 import { getRequestMetadata } from "@/lib/request";
 
@@ -58,14 +60,20 @@ function formDataToObject(formData: FormData) {
 
 async function writeAdminMutationLogs(input: {
   adminUserId: string;
+  sessionId: string;
   action: string;
   entityType: string;
   entityId: string;
   metadata: Record<string, unknown>;
+  analytics?: {
+    eventName: AnalyticsEventName;
+    sourcePath: string;
+    metadata?: Record<string, unknown>;
+  };
 }) {
   const { ipAddress, userAgent } = await getRequestMetadata();
 
-  await Promise.all([
+  const writes: Array<Promise<unknown>> = [
     writeActivityLog({
       actorType: "admin",
       actorId: input.adminUserId,
@@ -83,7 +91,20 @@ async function writeAdminMutationLogs(input: {
       ipAddress,
       userAgent
     })
-  ]);
+  ];
+
+  if (input.analytics) {
+    writes.push(
+      trackEventAction({
+        eventName: input.analytics.eventName,
+        sourcePath: input.analytics.sourcePath,
+        sessionId: input.sessionId,
+        metadata: input.analytics.metadata ?? input.metadata
+      })
+    );
+  }
+
+  await Promise.all(writes);
 }
 
 export async function updateOpportunityStatusAction(
@@ -112,10 +133,20 @@ export async function updateOpportunityStatusAction(
 
   await writeAdminMutationLogs({
     adminUserId: admin.user.id,
+    sessionId: admin.session.id,
     action: "admin.opportunity.status_updated",
     entityType: "opportunity",
     entityId: parsed.data.id,
-    metadata: { status: parsed.data.status }
+    metadata: { status: parsed.data.status },
+    analytics: {
+      eventName: analyticsEvents.adminStatusChanged,
+      sourcePath: `/admin/opportunities/${parsed.data.id}`,
+      metadata: {
+        entityType: "opportunity",
+        entityId: parsed.data.id,
+        status: parsed.data.status
+      }
+    }
   });
   revalidatePath("/admin/opportunities");
   revalidatePath(`/admin/opportunities/${parsed.data.id}`);
@@ -152,10 +183,20 @@ export async function updateContactStatusAction(
 
   await writeAdminMutationLogs({
     adminUserId: admin.user.id,
+    sessionId: admin.session.id,
     action: "admin.contact.status_updated",
     entityType: "contact_submission",
     entityId: parsed.data.id,
-    metadata: { status: parsed.data.status }
+    metadata: { status: parsed.data.status },
+    analytics: {
+      eventName: analyticsEvents.adminStatusChanged,
+      sourcePath: "/admin/contacts",
+      metadata: {
+        entityType: "contact_submission",
+        entityId: parsed.data.id,
+        status: parsed.data.status
+      }
+    }
   });
   revalidatePath("/admin/contacts");
 
@@ -211,6 +252,7 @@ export async function createForecastConfigVersionAction(
 
   await writeAdminMutationLogs({
     adminUserId: admin.user.id,
+    sessionId: admin.session.id,
     action: "admin.forecast_config.version_created",
     entityType: "forecast_config",
     entityId: activeConfig.config.id,
@@ -218,6 +260,16 @@ export async function createForecastConfigVersionAction(
       previousVersionId: activeConfig.latestVersion.id,
       newVersionId: version.id,
       versionNumber: nextVersionNumber
+    },
+    analytics: {
+      eventName: analyticsEvents.forecastConfigVersionCreated,
+      sourcePath: "/admin/forecast-configs",
+      metadata: {
+        forecastConfigId: activeConfig.config.id,
+        previousVersionId: activeConfig.latestVersion.id,
+        newVersionId: version.id,
+        versionNumber: nextVersionNumber
+      }
     }
   });
   revalidatePath("/admin/forecast-configs");
@@ -267,6 +319,7 @@ export async function createOpportunityPostAction(
 
   await writeAdminMutationLogs({
     adminUserId: admin.user.id,
+    sessionId: admin.session.id,
     action: "admin.opportunity_post.created",
     entityType: "opportunity_post",
     entityId: record.id,

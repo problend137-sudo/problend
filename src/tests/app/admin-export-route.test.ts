@@ -3,6 +3,8 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { writeAuditLog } from "@/db/queries/analytics";
 import { getAdminExportRows } from "@/db/queries/admin-operations";
 import { requireAdmin } from "@/features/admin-auth/guards";
+import { trackEventAction } from "@/features/analytics/actions";
+import { analyticsEvents } from "@/features/analytics/events";
 import { GET } from "@/app/api/admin/export/[dataset]/route";
 
 vi.mock("@/features/admin-auth/guards", () => ({
@@ -17,6 +19,10 @@ vi.mock("@/db/queries/admin-operations", () => ({
 
 vi.mock("@/db/queries/analytics", () => ({
   writeAuditLog: vi.fn()
+}));
+
+vi.mock("@/features/analytics/actions", () => ({
+  trackEventAction: vi.fn()
 }));
 
 vi.mock("@/lib/request", () => ({
@@ -52,6 +58,7 @@ describe("admin export route", () => {
     vi.clearAllMocks();
     vi.mocked(requireAdmin).mockResolvedValue(adminContext as never);
     vi.mocked(writeAuditLog).mockResolvedValue({ id: "audit-id" } as never);
+    vi.mocked(trackEventAction).mockResolvedValue({ ok: true, id: "analytics-id" } as never);
   });
 
   it("rejects unsupported datasets after requiring admin", async () => {
@@ -62,6 +69,7 @@ describe("admin export route", () => {
     expect(requireAdmin).toHaveBeenCalled();
     expect(getAdminExportRows).not.toHaveBeenCalled();
     expect(writeAuditLog).not.toHaveBeenCalled();
+    expect(trackEventAction).not.toHaveBeenCalled();
   });
 
   it("returns CSV for a supported dataset and writes an audit log", async () => {
@@ -93,6 +101,15 @@ describe("admin export route", () => {
         userAgent: "vitest-export"
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.exportCreated,
+      sourcePath: "/api/admin/export/opportunities",
+      sessionId: "session-id",
+      metadata: {
+        dataset: "opportunities",
+        rowCount: 1
+      }
+    });
   });
 
   it("does not export data when admin authorization fails", async () => {
@@ -101,5 +118,6 @@ describe("admin export route", () => {
     await expect(GET(requestFor("opportunities"), contextFor("opportunities"))).rejects.toThrow("not authorized");
     expect(getAdminExportRows).not.toHaveBeenCalled();
     expect(writeAuditLog).not.toHaveBeenCalled();
+    expect(trackEventAction).not.toHaveBeenCalled();
   });
 });

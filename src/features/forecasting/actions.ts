@@ -6,6 +6,8 @@ import {
   getActiveForecastConfigVersion
 } from "@/db/queries/forecasts";
 import type { JsonObject } from "@/db/schema";
+import { analyticsEvents } from "@/features/analytics/events";
+import { trackEventAction } from "@/features/analytics/actions";
 import { calculateForecast } from "./engine";
 import {
   forecastAssumptionsSchema,
@@ -57,6 +59,16 @@ export async function runPlacementEstimateAction(
   const { contactName, email, phone, sourcePath, honeypot: _honeypot, ...forecastInput } = parsed.data;
 
   try {
+    await trackEventAction({
+      eventName: analyticsEvents.calculatorStarted,
+      sourcePath,
+      metadata: {
+        venueType: forecastInput.venueType,
+        city: forecastInput.city,
+        state: forecastInput.state
+      }
+    });
+
     const activeVersion = await getActiveForecastConfigVersion();
 
     if (!activeVersion) {
@@ -84,7 +96,7 @@ export async function runPlacementEstimateAction(
       sourcePath
     });
 
-    await createForecastRun({
+    const forecastRun = await createForecastRun({
       calculatorSubmissionId: calculatorSubmission.id,
       forecastConfigVersionId: activeVersion.id,
       inputSnapshot: toJsonObject(forecastInput),
@@ -92,6 +104,18 @@ export async function runPlacementEstimateAction(
       outputSnapshot: toJsonObject(output),
       reasoning: output.reasoning,
       source: "placement_estimate"
+    });
+    await trackEventAction({
+      eventName: analyticsEvents.calculatorCompleted,
+      sourcePath,
+      metadata: {
+        calculatorSubmissionId: calculatorSubmission.id,
+        forecastRunId: forecastRun.id,
+        venueType: forecastInput.venueType,
+        city: forecastInput.city,
+        state: forecastInput.state,
+        recommendedMachineCount: output.recommendedMachineCount
+      }
     });
 
     return {

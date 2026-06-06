@@ -25,6 +25,25 @@ export const publicCtas = {
   submitOpportunity: { href: "/business-solutions", label: "Share an opportunity" }
 } as const;
 
+export const publicRoutePaths = [
+  "/",
+  "/about",
+  "/how-it-works",
+  "/product-offerings",
+  "/business-solutions",
+  "/contact",
+  "/placement-estimate",
+  "/partner-with-problend",
+  "/submit-venue",
+  "/city-waitlist",
+  "/published-opportunities",
+  "/submit-opportunity",
+  "/privacy-policy",
+  "/terms-and-conditions",
+  "/cancellation-and-refunds",
+  "/shipping-policy"
+] as const;
+
 export const workingHours = [
   { days: "Mon - Fri", hours: "9:00 am – 7:00 pm" },
   { days: "Saturday", hours: "9:00 am – 7:00 pm" },

@@ -1,0 +1,17 @@
+import type { MetadataRoute } from "next";
+
+import { publicRoutePaths } from "@/content/site";
+import { env } from "@/lib/env";
+
+const siteUrl = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const lastModified = new Date();
+
+  return publicRoutePaths.map((path) => ({
+    url: `${siteUrl}${path}`,
+    lastModified,
+    changeFrequency: path === "/" ? "weekly" : "monthly",
+    priority: path === "/" ? 1 : 0.7
+  }));
+}

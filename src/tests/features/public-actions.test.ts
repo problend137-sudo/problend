@@ -10,6 +10,8 @@ import {
 import { createWaitlistEntry } from "@/db/queries/waitlists";
 import { contactSubmissionSchema } from "@/features/contacts/schemas";
 import { submitContactAction } from "@/features/contacts/actions";
+import { trackEventAction } from "@/features/analytics/actions";
+import { analyticsEvents } from "@/features/analytics/events";
 import {
   opportunityApplicationSchema,
   opportunitySubmissionSchema
@@ -23,6 +25,10 @@ import { submitWaitlistAction } from "@/features/waitlists/actions";
 
 vi.mock("@/db/queries/analytics", () => ({
   writeActivityLog: vi.fn()
+}));
+
+vi.mock("@/features/analytics/actions", () => ({
+  trackEventAction: vi.fn()
 }));
 
 vi.mock("@/db/queries/contacts", () => ({
@@ -229,6 +235,7 @@ describe("public acquisition actions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(writeActivityLog).mockResolvedValue({ id: "activity-id" } as never);
+    vi.mocked(trackEventAction).mockResolvedValue({ ok: true, id: "analytics-id" } as never);
     vi.mocked(listPublishedOpportunityPosts).mockResolvedValue([
       {
         id: validApplication.opportunityPostId,
@@ -275,6 +282,14 @@ describe("public acquisition actions", () => {
         entityId: "contact-id"
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.contactSubmitted,
+      sourcePath: "/contact",
+      metadata: {
+        contactSubmissionId: "contact-id",
+        hasPhone: true
+      }
+    });
   });
 
   it("returns field errors and skips persistence for invalid contact input", async () => {
@@ -287,6 +302,7 @@ describe("public acquisition actions", () => {
     expect(result.fieldErrors?.email).toBeDefined();
     expect(createContactSubmission).not.toHaveBeenCalled();
     expect(writeActivityLog).not.toHaveBeenCalled();
+    expect(trackEventAction).not.toHaveBeenCalled();
   });
 
   it("rejects filled honeypot fields before contact persistence", async () => {
@@ -295,6 +311,7 @@ describe("public acquisition actions", () => {
     expect(result.ok).toBe(false);
     expect(createContactSubmission).not.toHaveBeenCalled();
     expect(writeActivityLog).not.toHaveBeenCalled();
+    expect(trackEventAction).not.toHaveBeenCalled();
   });
 
   it("rejects filled honeypot fields before opportunity persistence", async () => {
@@ -307,6 +324,7 @@ describe("public acquisition actions", () => {
     expect(result.fieldErrors?.honeypot).toBeDefined();
     expect(createOpportunity).not.toHaveBeenCalled();
     expect(writeActivityLog).not.toHaveBeenCalled();
+    expect(trackEventAction).not.toHaveBeenCalled();
   });
 
   it("returns a successful opportunity action result", async () => {
@@ -339,6 +357,17 @@ describe("public acquisition actions", () => {
         entityId: "opportunity-id"
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.opportunitySubmitted,
+      sourcePath: "/submit-opportunity",
+      metadata: {
+        opportunityId: "opportunity-id",
+        opportunityKind: "venue",
+        locationTypesCount: 2,
+        city: "New Delhi",
+        state: "Delhi"
+      }
+    });
   });
 
   it("returns a successful opportunity application action result", async () => {

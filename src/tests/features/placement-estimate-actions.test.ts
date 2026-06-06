@@ -9,11 +9,17 @@ import { testForecastAssumptions } from "@/features/forecasting/assumptions";
 import { calculateForecast } from "@/features/forecasting/engine";
 import { runPlacementEstimateAction } from "@/features/forecasting/actions";
 import { placementEstimateInputSchema } from "@/features/forecasting/schemas";
+import { trackEventAction } from "@/features/analytics/actions";
+import { analyticsEvents } from "@/features/analytics/events";
 
 vi.mock("@/db/queries/forecasts", () => ({
   createCalculatorSubmission: vi.fn(),
   createForecastRun: vi.fn(),
   getActiveForecastConfigVersion: vi.fn()
+}));
+
+vi.mock("@/features/analytics/actions", () => ({
+  trackEventAction: vi.fn()
 }));
 
 const activeAssumptions = {
@@ -102,6 +108,7 @@ describe("runPlacementEstimateAction", () => {
     vi.mocked(getActiveForecastConfigVersion).mockResolvedValue(activeVersion as never);
     vi.mocked(createCalculatorSubmission).mockResolvedValue({ id: "calculator-submission-id" } as never);
     vi.mocked(createForecastRun).mockResolvedValue({ id: "forecast-run-id" } as never);
+    vi.mocked(trackEventAction).mockResolvedValue({ ok: true, id: "analytics-id" } as never);
   });
 
   it("returns field errors and skips persistence for invalid input", async () => {
@@ -115,6 +122,7 @@ describe("runPlacementEstimateAction", () => {
     expect(getActiveForecastConfigVersion).not.toHaveBeenCalled();
     expect(createCalculatorSubmission).not.toHaveBeenCalled();
     expect(createForecastRun).not.toHaveBeenCalled();
+    expect(trackEventAction).not.toHaveBeenCalled();
   });
 
   it("uses active stored forecast assumptions, persists snapshots, and returns public output", async () => {
@@ -164,6 +172,27 @@ describe("runPlacementEstimateAction", () => {
         source: "placement_estimate"
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.calculatorStarted,
+      sourcePath: "/placement-estimate",
+      metadata: {
+        venueType: "gym",
+        city: "Mumbai",
+        state: "Maharashtra"
+      }
+    });
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.calculatorCompleted,
+      sourcePath: "/placement-estimate",
+      metadata: {
+        calculatorSubmissionId: "calculator-submission-id",
+        forecastRunId: "forecast-run-id",
+        venueType: "gym",
+        city: "Mumbai",
+        state: "Maharashtra",
+        recommendedMachineCount: expected.recommendedMachineCount
+      }
+    });
   });
 
   it("excludes forecast config ids, raw assumptions, and internal reasoning from the public result", async () => {

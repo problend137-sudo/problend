@@ -12,6 +12,8 @@ import {
   updateContactStatusAction,
   updateOpportunityStatusAction
 } from "@/features/admin-operations/actions";
+import { trackEventAction } from "@/features/analytics/actions";
+import { analyticsEvents } from "@/features/analytics/events";
 import { requireAdmin } from "@/features/admin-auth/guards";
 import { testForecastAssumptions } from "@/features/forecasting/assumptions";
 
@@ -34,6 +36,10 @@ vi.mock("@/db/queries/admin-operations", () => ({
 vi.mock("@/db/queries/analytics", () => ({
   writeActivityLog: vi.fn(),
   writeAuditLog: vi.fn()
+}));
+
+vi.mock("@/features/analytics/actions", () => ({
+  trackEventAction: vi.fn()
 }));
 
 vi.mock("@/lib/request", () => ({
@@ -78,6 +84,7 @@ describe("admin operation actions", () => {
     vi.mocked(requireAdmin).mockResolvedValue(adminContext as never);
     vi.mocked(writeActivityLog).mockResolvedValue({ id: "activity-id" } as never);
     vi.mocked(writeAuditLog).mockResolvedValue({ id: "audit-id" } as never);
+    vi.mocked(trackEventAction).mockResolvedValue({ ok: true, id: "analytics-id" } as never);
   });
 
   it("requires admin and writes activity/audit records for opportunity status updates", async () => {
@@ -117,6 +124,16 @@ describe("admin operation actions", () => {
         userAgent: "vitest-admin-actions"
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.adminStatusChanged,
+      sourcePath: `/admin/opportunities/${opportunityId}`,
+      sessionId: "session-id",
+      metadata: {
+        entityType: "opportunity",
+        entityId: opportunityId,
+        status: "qualified"
+      }
+    });
   });
 
   it("requires admin and writes activity/audit records for contact status updates", async () => {
@@ -154,6 +171,16 @@ describe("admin operation actions", () => {
         entityId: contactId
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.adminStatusChanged,
+      sourcePath: "/admin/contacts",
+      sessionId: "session-id",
+      metadata: {
+        entityType: "contact_submission",
+        entityId: contactId,
+        status: "replied"
+      }
+    });
   });
 
   it("creates a new forecast config version instead of mutating the active version", async () => {
@@ -211,5 +238,16 @@ describe("admin operation actions", () => {
         })
       })
     );
+    expect(trackEventAction).toHaveBeenCalledWith({
+      eventName: analyticsEvents.forecastConfigVersionCreated,
+      sourcePath: "/admin/forecast-configs",
+      sessionId: "session-id",
+      metadata: {
+        forecastConfigId,
+        previousVersionId: activeVersionId,
+        newVersionId,
+        versionNumber: 3
+      }
+    });
   });
 });

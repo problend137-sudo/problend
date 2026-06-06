@@ -2,6 +2,8 @@
 
 import { writeActivityLog } from "@/db/queries/analytics";
 import { createContactSubmission } from "@/db/queries/contacts";
+import { analyticsEvents } from "@/features/analytics/events";
+import { trackEventAction } from "@/features/analytics/actions";
 import { getRequestMetadata } from "@/lib/request";
 import { contactSubmissionSchema } from "./schemas";
 
@@ -61,6 +63,14 @@ export async function submitContactAction(_previousState: ActionResult | null, f
       entityType: "contact_submission",
       entityId: record.id,
       sourcePath: submission.sourcePath
+    });
+    await trackEventAction({
+      eventName: analyticsEvents.contactSubmitted,
+      sourcePath: submission.sourcePath,
+      metadata: {
+        contactSubmissionId: record.id,
+        hasPhone: Boolean(submission.phone)
+      }
     });
 
     return {

@@ -6,6 +6,8 @@ import {
   createOpportunityApplication,
   listPublishedOpportunityPosts
 } from "@/db/queries/opportunities";
+import { analyticsEvents } from "@/features/analytics/events";
+import { trackEventAction } from "@/features/analytics/actions";
 import { getRequestMetadata } from "@/lib/request";
 import {
   opportunityApplicationSchema,
@@ -79,6 +81,17 @@ export async function submitOpportunityAction(_previousState: ActionResult | nul
       metadata: {
         sourcePath: submission.sourcePath,
         opportunityKind: submission.opportunityKind
+      }
+    });
+    await trackEventAction({
+      eventName: analyticsEvents.opportunitySubmitted,
+      sourcePath: submission.sourcePath,
+      metadata: {
+        opportunityId: record.id,
+        opportunityKind: submission.opportunityKind,
+        locationTypesCount: submission.locationTypes.length,
+        city: submission.city,
+        state: submission.state
       }
     });
 
