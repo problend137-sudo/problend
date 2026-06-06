@@ -392,8 +392,7 @@ export function OpportunityForm({
         </div>
       </div>
 
-      {stepIndex === 0 ? (
-        <section aria-labelledby="opportunity-kind-title" className="grid gap-5">
+      <section aria-labelledby="opportunity-kind-title" className="grid gap-5" hidden={stepIndex !== 0}>
           <div>
             <h2 className="font-[var(--font-display)] text-4xl font-semibold leading-none text-slate-950" id="opportunity-kind-title">
               What do you have?
@@ -414,11 +413,10 @@ export function OpportunityForm({
               </OptionButton>
             ))}
           </div>
-        </section>
-      ) : null}
+      </section>
 
-      {stepIndex === 1 && kind === "open_brief" ? (
-        <section aria-labelledby="open-brief-title" className="grid gap-4 border border-slate-300 bg-white p-4">
+      {kind === "open_brief" ? (
+        <section aria-labelledby="open-brief-title" className="grid gap-4 border border-slate-300 bg-white p-4" hidden={stepIndex !== 1}>
           <h2 className="font-[var(--font-display)] text-3xl font-semibold leading-none text-slate-950" id="open-brief-title">
             See open opportunities
           </h2>
@@ -434,8 +432,8 @@ export function OpportunityForm({
         </section>
       ) : null}
 
-      {stepIndex === 1 && kind !== "open_brief" ? (
-        <section aria-labelledby="opportunity-details-title" className="grid gap-5">
+      {kind !== "open_brief" ? (
+        <section aria-labelledby="opportunity-details-title" className="grid gap-5" hidden={stepIndex !== 1}>
           <div>
             <h2 className="font-[var(--font-display)] text-4xl font-semibold leading-none text-slate-950" id="opportunity-details-title">
               {kind === "venue" ? "Tell us about the place." : kind === "city_network" ? "Tell us about the reach." : "Tell us about the introduction."}
@@ -558,8 +556,8 @@ export function OpportunityForm({
         </section>
       ) : null}
 
-      {stepIndex === 2 && kind !== "open_brief" ? (
-        <section aria-labelledby="opportunity-contact-title" className="grid gap-5">
+      {kind !== "open_brief" ? (
+        <section aria-labelledby="opportunity-contact-title" className="grid gap-5" hidden={stepIndex !== 2}>
           <div>
             <h2 className="font-[var(--font-display)] text-4xl font-semibold leading-none text-slate-950" id="opportunity-contact-title">
               How should we reach you?

@@ -26,4 +26,28 @@ describe("OpportunityForm", () => {
 
     expect(screen.getByRole("heading", { name: "Tell us about the place." })).toBeTruthy();
   });
+
+  it("keeps branch detail fields in form data after moving to the contact step", async () => {
+    const { container } = render(<OpportunityForm sourcePath="/business-solutions" />);
+    const form = container.querySelector("#opportunity-intake") as HTMLFormElement;
+    const nextButton = screen.getByRole("button", { name: "Next" }) as HTMLButtonElement;
+
+    await waitFor(() => expect(nextButton.disabled).toBe(false));
+    fireEvent.click(nextButton);
+
+    fireEvent.change(form.querySelector('input[name="city"]') as HTMLInputElement, { target: { value: "Mumbai" } });
+    fireEvent.change(form.querySelector('input[name="state"]') as HTMLInputElement, { target: { value: "Maharashtra" } });
+    fireEvent.change(form.querySelector('textarea[name="accessMethod"]') as HTMLTextAreaElement, {
+      target: { value: "Direct access to the facility manager." }
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByRole("heading", { name: "How should we reach you?" })).toBeTruthy();
+
+    const formData = new FormData(form);
+    expect(formData.get("city")).toBe("Mumbai");
+    expect(formData.get("state")).toBe("Maharashtra");
+    expect(formData.get("accessMethod")).toBe("Direct access to the facility manager.");
+  });
 });
