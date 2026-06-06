@@ -22,7 +22,8 @@ export default function PlacementEstimatePage() {
         body="Prepare the basic venue information ProBlend needs to discuss machine placement fit for gyms, offices, campuses, residences, and other high-footfall locations."
         image={problendAssets.heroGymMachine}
         imagePosition="64% center"
-        primaryLink={publicCtas.contact}
+        primaryLink={publicCtas.submitOpportunity}
+        secondaryLink={publicCtas.contact}
         title="Run Placement Estimate"
       />
 
@@ -49,7 +50,7 @@ export default function PlacementEstimatePage() {
               ))}
             </div>
             <div className="mt-8">
-              <PublicLink href={publicCtas.contact.href} label={publicCtas.contact.label} />
+              <PublicLink href={publicCtas.submitOpportunity.href} label={publicCtas.submitOpportunity.label} />
             </div>
           </div>
         </div>

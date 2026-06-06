@@ -2,7 +2,7 @@ import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { problendAssets } from "@/content/assets";
-import { publicNavigation } from "@/content/site";
+import { publicCtas, publicNavigation } from "@/content/site";
 
 export function PublicHeader() {
   return (
@@ -15,7 +15,7 @@ export function PublicHeader() {
             height={38}
             priority
             src={problendAssets.logo.src}
-            style={{ height: "auto" }}
+            style={{ height: "auto", width: "auto" }}
             width={112}
           />
           <span className="sr-only">ProBlend home</span>
@@ -35,9 +35,9 @@ export function PublicHeader() {
 
         <Link
           className="hidden min-h-10 items-center border border-[var(--pb-line-strong)] px-4 text-[13px] font-bold text-[var(--pb-green)] transition-colors duration-200 hover:border-[var(--pb-green)] hover:bg-[rgba(168,255,63,0.08)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] md:inline-flex"
-          href={"/contact" as Route}
+          href={publicCtas.submitOpportunity.href as Route}
         >
-          Contact Us
+          {publicCtas.submitOpportunity.label}
         </Link>
 
       </div>

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { OpportunityForm } from "@/components/public/OpportunityForm";
+import { OpportunityPostList } from "@/components/public/OpportunityPostList";
 import { PublicLink } from "@/components/public/PublicLink";
 import { PublicPageHero } from "@/components/public/PublicPageHero";
 import { problendAssets } from "@/content/assets";
-import { currentCollaborationNeeds, publicCtas, routeMetadata } from "@/content/site";
+import { publicCtas, routeMetadata } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.submitOpportunity;
+export const dynamic = "force-dynamic";
 
 const opportunityDetails = [
   "Your role and organization",
@@ -22,12 +25,13 @@ export default function SubmitOpportunityPage() {
         body="Share the context for a venue, distribution, or strategic introduction so ProBlend can understand the right partnership conversation."
         image={problendAssets.machineFront}
         imagePosition="center top"
-        primaryLink={publicCtas.contact}
+        primaryLink={{ href: "#opportunity-intake", label: "Start Intake" }}
+        secondaryLink={publicCtas.placementEstimate}
         title="Submit Opportunity"
       />
 
       <section className="bg-[var(--pb-oled)] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1fr]">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.72fr_1.28fr]">
           <div>
             <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-[0.95] md:text-7xl">
               Details to include.
@@ -40,12 +44,9 @@ export default function SubmitOpportunityPage() {
               ))}
             </div>
             <div className="mt-8">
-              <PublicLink href={publicCtas.contact.href} label={publicCtas.contact.label} />
+              <PublicLink href={publicCtas.placementEstimate.href} label="Placement Estimate" />
             </div>
-          </div>
-
-          <div className="grid gap-8">
-            <figure className="relative min-h-[24rem] overflow-hidden border-y border-[rgba(245,239,233,0.18)]">
+            <figure className="relative mt-10 min-h-[22rem] overflow-hidden border-y border-[rgba(245,239,233,0.18)]">
               <Image
                 alt={problendAssets.heroGymMachine.alt}
                 className="object-cover"
@@ -55,17 +56,15 @@ export default function SubmitOpportunityPage() {
                 style={{ objectPosition: "64% center" }}
               />
             </figure>
-            <div className="grid gap-6">
-              {currentCollaborationNeeds.map((need) => (
-                <article className="border-b border-[rgba(245,239,233,0.16)] pb-6" key={need.title}>
-                  <h3 className="font-[var(--font-display)] text-3xl font-semibold">{need.title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[var(--pb-muted)]">{need.body}</p>
-                </article>
-              ))}
-            </div>
           </div>
+
+          <OpportunityForm />
         </div>
       </section>
+
+      <OpportunityPostList
+        body="Published opportunities are shown only when ProBlend has opened a specific public partnership or placement request."
+      />
     </main>
   );
 }

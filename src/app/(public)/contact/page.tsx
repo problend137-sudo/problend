@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ContactForm, WaitlistForm } from "@/components/public/ContactForm";
 import { GsapReveal } from "@/components/public/GsapReveal";
+import { PublicLink } from "@/components/public/PublicLink";
 import { problendAssets } from "@/content/assets";
-import { contactDetails, contactPageContent, routeMetadata, workingHours } from "@/content/site";
+import { contactDetails, contactPageContent, publicCtas, routeMetadata, workingHours } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.contact;
 
@@ -78,38 +80,30 @@ export default function ContactPage() {
                   ))}
                 </div>
               </div>
+
+              <div className="grid gap-4 border-t border-[var(--pb-line)] pt-8">
+                <h2 className="font-[var(--font-display)] text-4xl font-semibold leading-none">
+                  Opportunity Paths
+                </h2>
+                <p className="text-base leading-8 text-[var(--pb-muted)]">
+                  Venue, operator, distributor, and city interest can move through the dedicated platform paths.
+                </p>
+                <div className="flex flex-wrap gap-x-7 gap-y-3">
+                  <PublicLink href={publicCtas.submitOpportunity.href} label={publicCtas.submitOpportunity.label} />
+                  <PublicLink href={publicCtas.placementEstimate.href} label="Placement Estimate" tone="muted" />
+                </div>
+              </div>
             </div>
 
-            <form className="grid gap-6" data-reveal>
-              <div className="grid gap-6 md:grid-cols-2">
-                {contactPageContent.form.fields.slice(0, 2).map((field) => (
-                  <label className="grid gap-2 text-sm font-semibold text-[var(--pb-muted)]" key={field}>
-                    {field}
-                    <input className="min-h-12 border-b border-[var(--pb-line)] bg-transparent text-[var(--pb-cream)] outline-none focus:border-[var(--pb-green)]" />
-                  </label>
-                ))}
-              </div>
-              {contactPageContent.form.fields.slice(2).map((field) => (
-                <label className="grid gap-2 text-sm font-semibold text-[var(--pb-muted)]" key={field}>
-                  {field}
-                  {field === "Message" ? (
-                    <textarea className="min-h-40 resize-y border-b border-[var(--pb-line)] bg-transparent text-[var(--pb-cream)] outline-none focus:border-[var(--pb-green)]" />
-                  ) : (
-                    <input className="min-h-12 border-b border-[var(--pb-line)] bg-transparent text-[var(--pb-cream)] outline-none focus:border-[var(--pb-green)]" />
-                  )}
-                </label>
-              ))}
-              <div className="flex flex-wrap items-center gap-5">
-                <button className="min-h-11 border border-[var(--pb-line-strong)] px-6 text-sm font-bold text-[var(--pb-green)]" type="button">
-                  {contactPageContent.form.submit}
-                </button>
-                <p className="text-sm text-[var(--pb-muted)]">{contactPageContent.form.successText}</p>
-              </div>
-            </form>
+            <ContactForm />
           </div>
         </section>
       </GsapReveal>
+
+      <WaitlistForm
+        body="Share the city, state, or venue type where ProBlend should consider future placement interest."
+        sourcePath="/contact"
+      />
     </main>
   );
 }
-
