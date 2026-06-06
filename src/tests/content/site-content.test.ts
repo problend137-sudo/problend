@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { problendAssets } from "@/content/assets";
-import { caseStudies } from "@/content/case-studies";
+import { caseStudies, publishedCaseStudies } from "@/content/case-studies";
 import { legalPages } from "@/content/legal";
 import nextConfig from "../../../next.config";
 import {
@@ -212,7 +212,7 @@ describe("ProBlend content preservation", () => {
     ]);
   });
 
-  it("keeps the footer policy set and leaves case studies CMS-ready", () => {
+  it("keeps the footer policy set and leaves case studies publication-ready", () => {
     expect(legalPages.map((page) => page.slug)).toEqual([
       "privacy-policy",
       "terms-and-conditions",
@@ -238,7 +238,10 @@ describe("ProBlend content preservation", () => {
     expect(legalPages[3].sections.flatMap((section) => section.body)).toContain(
       "Standard delivery and installation of machines takes 30–45 days from order confirmation."
     );
-    expect(caseStudies).toEqual([]);
+    expect(caseStudies.length).toBeGreaterThan(0);
+    expect(publishedCaseStudies).toEqual(caseStudies.filter((caseStudy) => caseStudy.published));
+    expect(caseStudies.every((caseStudy) => caseStudy.slug && caseStudy.title && caseStudy.venueType && caseStudy.city)).toBe(true);
+    expect(caseStudies.every((caseStudy) => caseStudy.summary && caseStudy.metrics.length > 0 && caseStudy.body.length > 0)).toBe(true);
   });
 
   it("keeps legacy Wix routes compatible with canonical public pages", async () => {

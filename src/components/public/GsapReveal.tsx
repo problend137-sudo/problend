@@ -26,10 +26,12 @@ export function GsapReveal({ children, className }: GsapRevealProps) {
       const revealTargets = select("[data-reveal]");
       const imageTargets = select("[data-image-reveal]");
       const parallaxTargets = select("[data-parallax]");
+      const characterTargets = select("[data-character-reveal] [data-char]");
+      const capabilityTargets = select("[data-capability-step]");
       const mm = gsap.matchMedia(scope.current);
 
       mm.add("(prefers-reduced-motion: reduce)", () => {
-        const allTargets = [...revealTargets, ...imageTargets, ...parallaxTargets];
+        const allTargets = [...revealTargets, ...imageTargets, ...parallaxTargets, ...characterTargets, ...capabilityTargets];
         if (allTargets.length) {
           gsap.set(allTargets, {
             opacity: 1,
@@ -50,6 +52,29 @@ export function GsapReveal({ children, className }: GsapRevealProps) {
             scale: 1.03
           });
         }
+        if (characterTargets.length) {
+          gsap.set(characterTargets, { opacity: 0, yPercent: 72 });
+        }
+        if (capabilityTargets.length) {
+          gsap.set(capabilityTargets, { opacity: 0, x: 18 });
+        }
+
+        select("[data-character-reveal]").forEach((target) => {
+          const chars = target.querySelectorAll("[data-char]");
+
+          gsap.to(chars, {
+            opacity: 1,
+            yPercent: 0,
+            duration: 0.74,
+            ease: "power3.out",
+            stagger: 0.018,
+            scrollTrigger: {
+              trigger: target,
+              start: "top 92%",
+              once: true
+            }
+          });
+        });
 
         revealTargets.forEach((target) => {
           gsap.to(target, {
@@ -71,6 +96,21 @@ export function GsapReveal({ children, className }: GsapRevealProps) {
             clipPath: "inset(0% 0% 0% 0%)",
             scale: 1,
             duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: target,
+              start: "top 94%",
+              once: true
+            }
+          });
+        });
+
+        capabilityTargets.forEach((target, index) => {
+          gsap.to(target, {
+            opacity: 1,
+            x: 0,
+            duration: 0.62,
+            delay: index * 0.04,
             ease: "power3.out",
             scrollTrigger: {
               trigger: target,

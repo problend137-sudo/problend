@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { CaseStudySection } from "@/components/public/CaseStudySection";
+import { ExpansionMap } from "@/components/public/ExpansionMap";
+import { GsapReveal } from "@/components/public/GsapReveal";
 import { OpportunityForm } from "@/components/public/OpportunityForm";
 import { OpportunityPostList } from "@/components/public/OpportunityPostList";
 import { problendAssets } from "@/content/assets";
@@ -70,6 +73,14 @@ export default function BusinessSolutionsPage() {
       </section>
 
       <OpportunityPostList sourcePath="/business-solutions" />
+
+      <GsapReveal>
+        <ExpansionMap />
+      </GsapReveal>
+
+      <GsapReveal>
+        <CaseStudySection />
+      </GsapReveal>
 
       <section className="bg-[var(--pb-black)] px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.42fr_0.58fr]">

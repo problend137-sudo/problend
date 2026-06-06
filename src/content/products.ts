@@ -31,6 +31,80 @@ export const products = [
   }
 ] as const;
 
+export const productNutritionProfiles = [
+  {
+    slug: "belgian-chocolate",
+    serving: "300 ml shake",
+    protein: "24-30 g",
+    calories: "180-240 kcal",
+    sugar: "Low-sugar configuration available",
+    functionalBlend: "Cocoa flavour with whey protein and optional vitamin booster"
+  },
+  {
+    slug: "vanilla",
+    serving: "300 ml shake",
+    protein: "22-28 g",
+    calories: "170-230 kcal",
+    sugar: "Low-sugar configuration available",
+    functionalBlend: "Classic vanilla with balanced protein and daily nutrition add-ons"
+  },
+  {
+    slug: "mango",
+    serving: "300 ml shake",
+    protein: "20-26 g",
+    calories: "175-235 kcal",
+    sugar: "Low-sugar configuration available",
+    functionalBlend: "Fruit-forward mango profile with optional energy booster"
+  },
+  {
+    slug: "cola-electrolyte",
+    serving: "300 ml shake",
+    protein: "16-22 g",
+    calories: "150-210 kcal",
+    sugar: "Low-sugar configuration available",
+    functionalBlend: "Electrolyte-forward blend for hydration and active spaces"
+  }
+] as const satisfies ReadonlyArray<{
+  slug: (typeof products)[number]["slug"];
+  serving: string;
+  protein: string;
+  calories: string;
+  sugar: string;
+  functionalBlend: string;
+}>;
+
+export const machineCapabilities = [
+  {
+    title: "Cashless payments",
+    body: "UPI, card, and mobile wallet flows keep purchase friction low in gyms, campuses, offices, and residences."
+  },
+  {
+    title: "GPRS tracking",
+    body: "Connected machines report operational status so ProBlend can monitor availability across deployment locations."
+  },
+  {
+    title: "Inventory monitoring",
+    body: "Ingredient and consumable signals help the operations team plan stocking before a machine runs low."
+  },
+  {
+    title: "Analytics",
+    body: "Public-safe demand patterns help ProBlend tune flavour mix, service cadence, and placement conversations."
+  },
+  {
+    title: "Remote monitoring",
+    body: "Machine health and usage signals support faster support decisions without requiring venue teams to manage operations."
+  },
+  {
+    title: "Predictive restocking",
+    body: "Restocking plans can be aligned to expected demand, seasonal usage, and venue-specific consumption patterns."
+  }
+] as const;
+
+export const productCustomizationNotes = [
+  "Protein content can be configured for daily nutrition, post-workout recovery, or lighter refreshment use cases.",
+  "Flavour intensity can be tuned for venue preference, audience profile, and seasonal product campaigns."
+] as const;
+
 export const productOfferingCategories = [
   {
     number: "01",
@@ -72,4 +146,3 @@ export const productOfferingCategories = [
     ]
   }
 ] as const;
-

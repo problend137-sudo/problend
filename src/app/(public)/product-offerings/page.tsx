@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { GsapReveal } from "@/components/public/GsapReveal";
+import { ProductExplorer } from "@/components/public/ProductExplorer";
 import { problendAssets } from "@/content/assets";
 import { productOfferingCategories } from "@/content/products";
 import { productOfferingsContent, routeMetadata } from "@/content/site";
@@ -36,6 +37,10 @@ export default function ProductOfferingsPage() {
             </figure>
           </div>
         </section>
+      </GsapReveal>
+
+      <GsapReveal>
+        <ProductExplorer />
       </GsapReveal>
 
       <GsapReveal>

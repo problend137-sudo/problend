@@ -13,6 +13,31 @@ const featureImages = [
   problendAssets.generatedOperationsRestocking
 ] as const;
 
+function CharacterRevealHeading({ text }: { text: string }) {
+  const words = text.split(" ");
+
+  return (
+    <span aria-hidden="true" className="block" data-character-reveal>
+      {words.map((word, wordIndex) => (
+        <span key={`${word}-${wordIndex}`}>
+          <span className="inline-block whitespace-nowrap" key={`${word}-${wordIndex}`}>
+            {Array.from(word).map((character, characterIndex) => (
+              <span className="inline-block" data-char key={`${word}-${character}-${characterIndex}`}>
+                {character}
+              </span>
+            ))}
+          </span>
+          {wordIndex < words.length - 1 ? (
+            <span aria-hidden="true" className="inline-block" data-char-space>
+              &nbsp;
+            </span>
+          ) : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function HomePage() {
   return (
     <main>
@@ -35,10 +60,10 @@ export default function HomePage() {
           <div className="relative z-10 mx-auto flex min-h-[inherit] max-w-7xl items-center px-5 py-10 md:px-8 md:py-16">
             <div className="ml-auto max-w-[42rem]">
               <h1
+                aria-label={homeContent.hero.title}
                 className="pb-text-balance font-[var(--font-display)] text-[clamp(3.35rem,7.6vw,6.5rem)] font-bold leading-[0.88] text-[var(--pb-cream)]"
-                data-reveal
               >
-                {homeContent.hero.title}
+                <CharacterRevealHeading text={homeContent.hero.title} />
               </h1>
               <p className="mt-6 max-w-lg text-base leading-8 text-[rgba(242,241,234,0.84)] md:text-lg" data-reveal>
                 {homeContent.hero.body}
