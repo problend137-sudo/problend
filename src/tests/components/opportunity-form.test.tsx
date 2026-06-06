@@ -30,7 +30,10 @@ describe("OpportunityForm", () => {
   it("keeps branch detail fields in form data after moving to the contact step", async () => {
     const { container } = render(<OpportunityForm sourcePath="/business-solutions" />);
     const form = container.querySelector("#opportunity-intake") as HTMLFormElement;
+    const submitSpy = vi.fn((event: SubmitEvent) => event.preventDefault());
     const nextButton = screen.getByRole("button", { name: "Next" }) as HTMLButtonElement;
+
+    form.addEventListener("submit", submitSpy);
 
     await waitFor(() => expect(nextButton.disabled).toBe(false));
     fireEvent.click(nextButton);
@@ -43,6 +46,7 @@ describe("OpportunityForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
 
+    expect(submitSpy).not.toHaveBeenCalled();
     expect(screen.getByRole("heading", { name: "How should we reach you?" })).toBeTruthy();
 
     const formData = new FormData(form);

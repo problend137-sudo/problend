@@ -580,7 +580,10 @@ export function OpportunityForm({
           <button
             className="min-h-11 border border-slate-300 px-5 text-sm font-extrabold text-slate-700 transition-colors duration-200 hover:border-slate-950 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-50"
             disabled={controlsDisabled || stepIndex === 0}
-            onClick={() => goToStep(stepIndex - 1)}
+            onClick={(event) => {
+              event.preventDefault();
+              goToStep(stepIndex - 1);
+            }}
             type="button"
           >
             Back
@@ -589,7 +592,10 @@ export function OpportunityForm({
             <button
               className="min-h-11 border border-slate-950 bg-slate-950 px-6 text-sm font-extrabold text-white transition-colors duration-200 hover:bg-[var(--pb-green)] hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-60"
               disabled={controlsDisabled}
-              onClick={() => goToStep(stepIndex + 1)}
+              onClick={(event) => {
+                event.preventDefault();
+                goToStep(stepIndex + 1);
+              }}
               type="button"
             >
               Next
