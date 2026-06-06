@@ -25,10 +25,10 @@ export function PublicPageHero({
   imagePosition = "center"
 }: PublicPageHeroProps) {
   return (
-    <section className="relative overflow-hidden border-b border-[var(--pb-border)] bg-[var(--pb-black)] px-5 py-14 md:px-8 md:py-20">
+    <section className="relative overflow-hidden border-b border-[var(--pb-line)] bg-[var(--pb-black)] px-5 py-14 md:px-8 md:py-20">
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.82fr_1fr]">
         <div className="relative z-10">
-          <h1 className="max-w-4xl font-[var(--font-barlow-condensed)] text-6xl font-semibold leading-[0.92] text-[var(--pb-cream)] md:text-8xl">
+          <h1 className="pb-text-balance max-w-4xl font-[var(--font-display)] text-6xl font-semibold leading-[0.92] text-[var(--pb-cream)] md:text-8xl">
             {title}
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--pb-muted)] md:text-xl">{body}</p>
@@ -39,7 +39,7 @@ export function PublicPageHero({
             </div>
           )}
         </div>
-        <figure className="relative min-h-[22rem] overflow-hidden border-y border-[rgba(245,239,233,0.22)] md:min-h-[30rem]">
+        <figure className="pb-media-shadow relative min-h-[22rem] overflow-hidden border border-[var(--pb-line)] md:min-h-[30rem]">
           <Image
             alt={image.alt}
             className="object-cover"
@@ -50,7 +50,7 @@ export function PublicPageHero({
             src={image.src}
             style={{ objectPosition: imagePosition }}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.28),transparent_45%,rgba(0,0,0,0.28))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.2),transparent_45%,rgba(0,0,0,0.2))]" />
         </figure>
       </div>
     </section>

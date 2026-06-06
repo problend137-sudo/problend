@@ -4,45 +4,72 @@ export const products = [
   {
     slug: "belgian-chocolate",
     name: "Belgian Chocolate Protein Shake",
-    description: "A rich chocolate protein shake for fresh, on-demand recovery.",
-    nutrition: { protein: "Configurable", sugar: "Low-sugar option", format: "Fresh shake" },
-    tags: ["High protein", "Customizable", "Cashless"],
-    accent: "#6b321f",
-    visual: problendAssets.proteinPowder
+    description: "Rich, indulgent, and packed with protein.",
+    accent: "#a8ff5e",
+    visual: problendAssets.generatedShakeDispensing
   },
   {
     slug: "vanilla",
     name: "Vanilla Protein Shake",
-    description: "A clean vanilla protein shake designed for daily fitness routines.",
-    nutrition: { protein: "Configurable", sugar: "Low-sugar option", format: "Fresh shake" },
-    tags: ["Everyday", "Customizable", "Fresh"],
-    accent: "#efe0c4",
-    visual: problendAssets.machineCloseup
+    description: "Smooth, classic, and perfect for daily nutrition.",
+    accent: "#dfffc2",
+    visual: problendAssets.generatedMachineProductPortrait
   },
   {
     slug: "mango",
     name: "Mango Protein Shake",
-    description: "A fruit-forward protein shake for active campuses, gyms, and offices.",
-    nutrition: { protein: "Configurable", sugar: "Low-sugar option", format: "Fresh shake" },
-    tags: ["Refreshing", "Campus friendly", "Customizable"],
-    accent: "#f1a93b",
-    visual: problendAssets.heroGymMachine
+    description: "Fruity, refreshing, and energizing.",
+    accent: "#f6b34d",
+    visual: problendAssets.generatedMachineInteractionPayment
   },
   {
     slug: "cola-electrolyte",
     name: "Cola Electrolyte Shake",
-    description: "A functional electrolyte shake for hydration-led use cases.",
-    nutrition: { protein: "Functional blend", sugar: "Diet-friendly option", format: "Fresh shake" },
-    tags: ["Electrolytes", "Functional", "On demand"],
-    accent: "#76252d",
-    visual: problendAssets.machinePurchase
+    description: "Unique blend with electrolytes to hydrate and energize.",
+    accent: "#7cff4f",
+    visual: problendAssets.generatedMachineUpiGym
   }
 ] as const;
 
-export const productCapabilities = [
-  "Customizable protein content",
-  "Customizable flavour intensity",
-  "Branded experiences and co-branding",
-  "Special promotions and seasonal offerings",
-  "Functional blends with electrolytes, vitamins, and energy boosters"
+export const productOfferingCategories = [
+  {
+    number: "01",
+    title: "Protein Shakes",
+    intro: "Fresh, high quality protein shakes available in multiple flavors:",
+    items: [
+      "Belgian Chocolate Protein Shake – Rich, indulgent, and packed with protein.",
+      "Vanilla Protein Shake – Smooth, classic, and perfect for daily nutrition.",
+      "Mango Protein Shake – Fruity, refreshing, and energizing.",
+      "Cola Electrolyte Shake – Unique blend with electrolytes to hydrate and energize."
+    ],
+    outro: "All shakes are customizable in terms of protein content and flavor intensity."
+  },
+  {
+    number: "02",
+    title: "Vending Machine Placement Solutions",
+    items: [
+      "Smart Vending Machines: Designed for quick, hygienic, and seamless dispensing.",
+      "Technology Integration: Cashless payments, GPRS tracking, inventory monitoring, and analytics.",
+      "Turnkey Setup: Pro Blend handles installation, stocking, and maintenance, allowing partners to focus on their business."
+    ]
+  },
+  {
+    number: "03",
+    title: "Customization Options",
+    items: [
+      "Personalized Nutrition: Adjust protein levels, sugar content, or add functional ingredients.",
+      "Branded Experiences: Co-branding opportunities for partners (gyms, offices, universities).",
+      "Special Promotions: Limited-edition flavors or seasonal offerings for engagement campaigns."
+    ]
+  },
+  {
+    number: "04",
+    title: "Health & Wellness Add-ons",
+    items: [
+      "Nutritional information displayed for all shakes.",
+      "Low-sugar, high-protein, and diet-friendly options.",
+      "Functional blends including electrolytes, vitamins, or energy boosters."
+    ]
+  }
 ] as const;
+

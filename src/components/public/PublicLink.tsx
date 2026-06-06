@@ -9,8 +9,8 @@ type PublicLinkProps = {
 };
 
 const toneClasses = {
-  light: "text-[var(--pb-cream)] hover:text-[var(--pb-gold)]",
-  dark: "text-[var(--pb-black)] hover:text-[var(--pb-bronze)]",
+  light: "text-[var(--pb-cream)] hover:text-[var(--pb-green)]",
+  dark: "text-[var(--pb-black)] hover:text-[var(--pb-green-dark)]",
   muted: "text-[var(--pb-muted)] hover:text-[var(--pb-cream)]"
 } as const;
 

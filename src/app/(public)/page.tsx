@@ -1,184 +1,156 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ProductFlavorCard } from "@/components/public/ProductFlavorCard";
+import { GsapReveal } from "@/components/public/GsapReveal";
 import { PublicLink } from "@/components/public/PublicLink";
-import { featureMoments, problendAssets } from "@/content/assets";
-import { products } from "@/content/products";
-import {
-  currentCollaborationNeeds,
-  preservedCopy,
-  publicCtas,
-  routeMetadata,
-  venueTypes
-} from "@/content/site";
+import { problendAssets } from "@/content/assets";
+import { homeContent, publicCtas, routeMetadata } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.home;
+
+const featureImages = [
+  problendAssets.generatedMachineInteractionPayment,
+  problendAssets.generatedShakeDispensing,
+  problendAssets.generatedOperationsRestocking
+] as const;
 
 export default function HomePage() {
   return (
     <main>
-      <section className="relative isolate min-h-[clamp(560px,calc(100svh-7rem),760px)] overflow-hidden bg-[var(--pb-oled)]">
-        <Image
-          alt={problendAssets.heroGymMachine.alt}
-          className="object-cover"
-          fill
-          loading="eager"
-          priority
-          sizes="100vw"
-          src={problendAssets.heroGymMachine.src}
-          style={{ objectPosition: "58% center" }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88)_0%,rgba(0,0,0,0.68)_34%,rgba(0,0,0,0.22)_68%,rgba(0,0,0,0.34)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,0.98))]" />
+      <GsapReveal>
+        <section className="relative isolate min-h-[500px] overflow-hidden bg-black md:min-h-[clamp(560px,calc(100svh-14rem),700px)]">
+          <Image
+            alt={problendAssets.generatedHeroGymMachineWide.alt}
+            className="object-cover"
+            fill
+            loading="eager"
+            priority
+            sizes="100vw"
+            src={problendAssets.generatedHeroGymMachineWide.src}
+            style={{ objectPosition: "46% center" }}
+          />
+          <div aria-hidden className="absolute left-0 top-[31%] h-[27%] w-[20%] bg-black/50 backdrop-blur-[2px] md:left-[27%] md:top-[17%] md:h-[32%] md:w-[18%]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.22)_36%,rgba(0,0,0,0.76)_62%,rgba(0,0,0,0.94)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(180deg,transparent,rgba(4,5,4,1))]" />
 
-        <div className="relative z-10 mx-auto flex min-h-[inherit] max-w-7xl items-center px-5 py-14 md:px-8">
-          <div className="max-w-4xl">
-            <h1 className="font-[var(--font-barlow-condensed)] text-6xl font-semibold leading-[0.9] text-[var(--pb-cream)] md:text-8xl lg:text-[6rem] xl:text-[6.5rem]">
-              {preservedCopy.heroHeadline}
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-[rgba(245,239,233,0.82)] md:text-lg">
-              {preservedCopy.heroBody}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-              <PublicLink href={publicCtas.howItWorks.href} label="How it Works" />
-              <PublicLink href={publicCtas.exploreProducts.href} label={publicCtas.exploreProducts.label} tone="muted" />
+          <div className="relative z-10 mx-auto flex min-h-[inherit] max-w-7xl items-center px-5 py-10 md:px-8 md:py-16">
+            <div className="ml-auto max-w-[42rem]">
+              <h1
+                className="pb-text-balance font-[var(--font-display)] text-[clamp(3.35rem,7.6vw,6.5rem)] font-bold leading-[0.88] text-[var(--pb-cream)]"
+                data-reveal
+              >
+                {homeContent.hero.title}
+              </h1>
+              <p className="mt-6 max-w-lg text-base leading-8 text-[rgba(242,241,234,0.84)] md:text-lg" data-reveal>
+                {homeContent.hero.body}
+              </p>
+              <div className="mt-8" data-reveal>
+                <PublicLink href={publicCtas.howItWorks.href} label={publicCtas.howItWorks.label} />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </GsapReveal>
 
-      <section className="bg-[var(--pb-oled)] px-5 py-16 text-center md:px-8 md:py-24">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] text-[var(--pb-cream)] md:text-7xl">
-            {preservedCopy.positioning}
-          </h2>
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-[var(--pb-muted)] md:text-lg">
-            {preservedCopy.positioningBody}
-          </p>
-        </div>
-
-        <div className="mx-auto mt-14 grid max-w-6xl gap-12 md:grid-cols-3">
-          {featureMoments.map((moment) => (
-            <article className="mx-auto max-w-sm text-center" key={moment.title}>
-              <div className="relative mx-auto size-32 overflow-hidden rounded-full border border-[rgba(245,239,233,0.18)] md:size-36">
-                <Image alt={moment.image.alt} className="object-cover" fill sizes="9rem" src={moment.image.src} />
-              </div>
-              <h3 className="mt-7 font-[var(--font-barlow-condensed)] text-3xl font-semibold text-[var(--pb-cream)]">
-                {moment.title}
-              </h3>
-              <p className="mt-4 text-sm leading-7 text-[var(--pb-muted)]">{moment.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="relative min-h-[38rem] overflow-hidden md:min-h-[48rem]">
-        <Image
-          alt={problendAssets.machineCloseup.alt}
-          className="object-cover"
-          fill
-          sizes="100vw"
-          src={problendAssets.machineCloseup.src}
-          style={{ objectPosition: "center" }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.82),rgba(0,0,0,0.18)_55%,rgba(0,0,0,0.5))]" />
-        <div className="relative z-10 mx-auto flex min-h-[inherit] max-w-7xl items-end px-5 py-14 md:px-8 md:py-20">
-          <div className="max-w-xl">
-            <p className="font-[var(--font-barlow-condensed)] text-3xl font-semibold text-[var(--pb-gold)]">Our Story</p>
-            <h2 className="mt-3 font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-none md:text-7xl">
-              {preservedCopy.premiumLine}
-            </h2>
-            <p className="mt-5 text-base leading-8 text-[rgba(245,239,233,0.84)]">
-              {preservedCopy.companyStory} {preservedCopy.wellnessMission}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid bg-[var(--pb-oled)] lg:grid-cols-[0.75fr_1fr_0.75fr_1fr]">
-        <div className="flex min-h-72 items-center justify-center px-8 py-12 text-center">
-          <p className="max-w-xs font-[var(--font-barlow-condensed)] text-4xl font-semibold italic leading-tight text-[var(--pb-lavender)]">
-            &quot;Here&apos;s a closer look at our protein vending machine&quot;
-          </p>
-        </div>
-        <figure className="relative min-h-[28rem] overflow-hidden">
-          <Image
-            alt={problendAssets.machineFront.alt}
-            className="object-cover"
-            fill
-            sizes="(min-width: 1024px) 25vw, 100vw"
-            src={problendAssets.machineFront.src}
-          />
-        </figure>
-        <div className="flex min-h-72 items-center justify-center px-8 py-12 text-center">
-          <p className="max-w-xs font-[var(--font-barlow-condensed)] text-4xl font-semibold italic leading-tight text-[var(--pb-lavender)]">
-            &quot;Behind the scenes: Where innovation meets wellness&quot;
-          </p>
-        </div>
-        <figure className="relative min-h-[28rem] overflow-hidden">
-          <Image
-            alt={problendAssets.behindScenes.alt}
-            className="object-cover"
-            fill
-            sizes="(min-width: 1024px) 25vw, 100vw"
-            src={problendAssets.behindScenes.src}
-          />
-        </figure>
-      </section>
-
-      <section className="bg-[var(--pb-cream)] px-5 py-16 text-[var(--pb-black)] md:px-8 md:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="max-w-2xl font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-                Flavours for active spaces.
+      <GsapReveal>
+        <section className="bg-[var(--pb-black)] px-5 pb-12 pt-5 md:px-8 md:pb-16 md:pt-7">
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.86fr_1.14fr]">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <h2 className="pb-text-balance font-[var(--font-display)] text-5xl font-bold leading-[0.9] md:text-7xl" data-reveal>
+                {homeContent.positioning.title}
               </h2>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--pb-graphite)]">
-                Four focused ProBlend offerings keep the range clear while supporting customization, functional blends, and
-                venue-specific promotions.
+              <p className="mt-6 max-w-xl text-base leading-8 text-[var(--pb-muted)]" data-reveal>
+                {homeContent.positioning.body}
               </p>
             </div>
-            <PublicLink href={publicCtas.exploreProducts.href} label={publicCtas.exploreProducts.label} tone="dark" />
-          </div>
 
-          <div className="mt-10 grid gap-px overflow-hidden bg-[rgba(7,7,7,0.18)] sm:grid-cols-2 xl:grid-cols-4">
-            {products.map((product, index) => (
-              <ProductFlavorCard compact index={index} key={product.slug} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--pb-oled)] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1fr]">
-          <div>
-            <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Built for venues where wellness is part of the day.
-            </h2>
-            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3">
-              {venueTypes.map((venue) => (
-                <span className="border-b border-[rgba(245,239,233,0.22)] pb-1 text-sm text-[var(--pb-muted)]" key={venue}>
-                  {venue}
-                </span>
+            <div className="grid gap-10">
+              {homeContent.featureMoments.map((moment, index) => (
+                <article className="grid gap-5 border-t border-[var(--pb-line)] pt-7 md:grid-cols-[0.9fr_1.1fr]" data-reveal key={moment.title}>
+                  <figure className="pb-media-shadow relative min-h-60 overflow-hidden border border-[var(--pb-line)]" data-image-reveal>
+                    <Image
+                      alt={featureImages[index].alt}
+                      className="object-cover"
+                      fill
+                      sizes="(min-width: 768px) 34vw, 100vw"
+                      src={featureImages[index].src}
+                      data-parallax
+                    />
+                    {index === 0 ? (
+                      <>
+                        <div aria-hidden className="absolute right-[4%] top-[20%] h-[34%] w-[48%] bg-black/42 backdrop-blur-[6px]" />
+                        <div aria-hidden className="absolute left-[44%] top-[71%] h-[16%] w-[23%] bg-black/50 backdrop-blur-[4px]" />
+                      </>
+                    ) : null}
+                    {index === 1 ? (
+                      <div aria-hidden className="absolute left-[48%] top-[17%] h-[28%] w-[20%] bg-black/42 backdrop-blur-[5px]" />
+                    ) : null}
+                  </figure>
+                  <div className="self-center">
+                    <h3 className="font-[var(--font-display)] text-4xl font-semibold leading-none text-[var(--pb-green)]">
+                      {moment.title}
+                    </h3>
+                    <p className="mt-4 text-sm leading-7 text-[var(--pb-muted)]">{moment.body}</p>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
-          <div className="grid gap-7 border-l border-[rgba(245,239,233,0.14)] pl-6 md:pl-10">
-            {currentCollaborationNeeds.map((need) => (
-              <article key={need.title}>
-                <h3 className="font-[var(--font-barlow-condensed)] text-3xl font-semibold text-[var(--pb-cream)]">
-                  {need.title}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--pb-muted)]">{need.body}</p>
-              </article>
-            ))}
-            <div className="flex flex-wrap gap-x-8 gap-y-3 pt-3">
-              <PublicLink href={publicCtas.submitOpportunity.href} label={publicCtas.submitOpportunity.label} />
-              <PublicLink href={publicCtas.contact.href} label={publicCtas.contact.label} tone="muted" />
+        </section>
+      </GsapReveal>
+
+      <GsapReveal>
+        <section className="bg-[var(--pb-cream)] px-5 py-16 text-[var(--pb-black)] md:px-8 md:py-24">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
+            <figure className="pb-media-shadow relative min-h-[28rem] overflow-hidden" data-image-reveal>
+              <Image
+                alt={problendAssets.generatedVenuePlacementProof.alt}
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 54vw, 100vw"
+                src={problendAssets.generatedVenuePlacementProof.src}
+                style={{ objectPosition: "68% center" }}
+                data-parallax
+              />
+            </figure>
+            <div>
+              <p className="font-[var(--font-display)] text-3xl font-semibold text-[var(--pb-green-dark)]" data-reveal>
+                {homeContent.story.title}
+              </p>
+              <p className="mt-5 text-lg leading-8 text-[var(--pb-graphite)]" data-reveal>
+                {homeContent.story.body}
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </GsapReveal>
+
+      <GsapReveal>
+        <section className="grid bg-black md:grid-cols-2">
+          <figure className="relative min-h-[32rem] overflow-hidden" data-image-reveal>
+            <Image
+              alt={problendAssets.generatedMachineProductPortrait.alt}
+              className="object-cover"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              src={problendAssets.generatedMachineProductPortrait.src}
+              style={{ objectPosition: "center top" }}
+              data-parallax
+            />
+            <div aria-hidden className="absolute left-[20%] top-[20%] h-[66%] w-[51%] border border-[rgba(168,255,63,0.1)] bg-black/50 backdrop-blur-[6px]" />
+          </figure>
+          <div className="grid content-center gap-10 px-5 py-14 md:px-10 lg:px-16">
+            {homeContent.story.mediaQuotes.map((quote) => (
+              <p
+                className="pb-text-balance max-w-xl border-t border-[var(--pb-line)] pt-8 font-[var(--font-display)] text-4xl font-semibold italic leading-tight text-[var(--pb-cream)] md:text-5xl"
+                data-reveal
+                key={quote}
+              >
+                {quote}
+              </p>
+            ))}
+          </div>
+        </section>
+      </GsapReveal>
     </main>
   );
 }

@@ -29,7 +29,7 @@ export default function SubmitOpportunityPage() {
       <section className="bg-[var(--pb-oled)] px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1fr]">
           <div>
-            <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
+            <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-[0.95] md:text-7xl">
               Details to include.
             </h2>
             <div className="mt-8 grid gap-3">
@@ -58,7 +58,7 @@ export default function SubmitOpportunityPage() {
             <div className="grid gap-6">
               {currentCollaborationNeeds.map((need) => (
                 <article className="border-b border-[rgba(245,239,233,0.16)] pb-6" key={need.title}>
-                  <h3 className="font-[var(--font-barlow-condensed)] text-3xl font-semibold">{need.title}</h3>
+                  <h3 className="font-[var(--font-display)] text-3xl font-semibold">{need.title}</h3>
                   <p className="mt-2 text-sm leading-7 text-[var(--pb-muted)]">{need.body}</p>
                 </article>
               ))}

@@ -1,94 +1,111 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ProductFlavorCard } from "@/components/public/ProductFlavorCard";
-import { PublicLink } from "@/components/public/PublicLink";
-import { PublicPageHero } from "@/components/public/PublicPageHero";
+import { GsapReveal } from "@/components/public/GsapReveal";
 import { problendAssets } from "@/content/assets";
-import { productCapabilities, products } from "@/content/products";
-import { machineCapabilities, publicCtas, routeMetadata } from "@/content/site";
+import { productOfferingCategories } from "@/content/products";
+import { productOfferingsContent, routeMetadata } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.productOfferings;
 
 export default function ProductOfferingsPage() {
   return (
     <main>
-      <PublicPageHero
-        body="Fresh protein shakes, functional blends, smart vending capabilities, and customization designed for active public and workplace environments."
-        image={problendAssets.machineCloseup}
-        primaryLink={publicCtas.contact}
-        secondaryLink={{ href: "/business-solutions", label: "Business Solutions" }}
-        title="Product Offerings"
-      />
-
-      <section className="bg-[var(--pb-cream)] px-5 py-16 text-[var(--pb-black)] md:px-8 md:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Four focused flavours. Built for daily use.
-            </h2>
-            <p className="mt-5 text-base leading-8 text-[var(--pb-graphite)]">
-              ProBlend keeps the product range clear and venue-friendly while supporting protein levels, flavour intensity,
-              and functional blends for different active communities.
-            </p>
+      <GsapReveal>
+        <section className="bg-[var(--pb-black)] px-5 py-12 md:px-8 md:py-16">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.86fr_1fr]">
+            <div>
+              <h1 className="pb-text-balance font-[var(--font-display)] text-6xl font-bold leading-[0.86] md:text-8xl" data-reveal>
+                {productOfferingsContent.title}
+              </h1>
+              <h2 className="mt-8 font-[var(--font-display)] text-4xl font-semibold leading-none text-[var(--pb-green)]" data-reveal>
+                {productOfferingsContent.heading}
+              </h2>
+            </div>
+            <figure className="pb-media-shadow relative min-h-[30rem] overflow-hidden border border-[var(--pb-line)] md:min-h-[36rem]" data-image-reveal>
+              <Image
+                alt={problendAssets.generatedMachineProductPortrait.alt}
+                className="object-cover"
+                fill
+                loading="eager"
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src={problendAssets.generatedMachineProductPortrait.src}
+                style={{ objectPosition: "center top" }}
+              />
+              <div aria-hidden className="absolute left-[20%] top-[20%] h-[66%] w-[51%] border border-[rgba(168,255,63,0.1)] bg-black/50 backdrop-blur-[6px]" />
+            </figure>
           </div>
-          <div className="mt-10 grid gap-px overflow-hidden bg-[rgba(7,7,7,0.18)] md:grid-cols-2 xl:grid-cols-4">
-            {products.map((product, index) => (
-              <ProductFlavorCard index={index} key={product.slug} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      </GsapReveal>
 
-      <section className="bg-[var(--pb-oled)] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.95fr_1fr]">
-          <figure className="relative min-h-[34rem] overflow-hidden border-y border-[rgba(245,239,233,0.18)]">
-            <Image
-              alt={problendAssets.heroGymMachine.alt}
-              className="object-cover"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              src={problendAssets.heroGymMachine.src}
-              style={{ objectPosition: "64% center" }}
-            />
-          </figure>
-          <div>
-            <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Customizable nutrition, prepared on demand.
-            </h2>
-            <div className="mt-8 grid gap-3">
-              {productCapabilities.map((capability) => (
-                <p className="border-b border-[rgba(245,239,233,0.16)] pb-3 text-base text-[var(--pb-muted)]" key={capability}>
-                  {capability}
-                </p>
+      <GsapReveal>
+        <section className="bg-[var(--pb-cream)] px-5 py-16 text-[var(--pb-black)] md:px-8 md:py-24">
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.7fr_1.3fr]">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <figure className="pb-media-shadow relative min-h-[26rem] overflow-hidden lg:min-h-[36rem]" data-image-reveal>
+                <Image
+                  alt={problendAssets.generatedShakeDispensing.alt}
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 36vw, 100vw"
+                  src={problendAssets.generatedShakeDispensing.src}
+                  style={{ objectPosition: "42% center" }}
+                  data-parallax
+                />
+                <div aria-hidden className="absolute left-[42%] top-[17%] h-[28%] w-[23%] bg-black/42 backdrop-blur-[5px]" />
+              </figure>
+            </div>
+
+            <div className="grid gap-10">
+              {productOfferingCategories.map((category) => (
+                <article className="border-t border-[rgba(4,5,4,0.18)] pt-8" data-reveal key={category.number}>
+                  <div className="grid gap-5 md:grid-cols-[5rem_1fr]">
+                    <p className="font-[var(--font-display)] text-5xl font-bold leading-none text-[var(--pb-green-dark)]">
+                      {category.number}
+                    </p>
+                    <div>
+                      <h2 className="font-[var(--font-display)] text-4xl font-semibold leading-none md:text-5xl">
+                        {category.title}
+                      </h2>
+                      {"intro" in category ? <p className="mt-5 text-base leading-7 text-[var(--pb-graphite)]">{category.intro}</p> : null}
+                      <ul className="mt-5 grid gap-3 text-sm leading-7 text-[var(--pb-graphite)]">
+                        {category.items.map((item) => (
+                          <li className="border-b border-[rgba(4,5,4,0.12)] pb-3" key={item}>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                      {"outro" in category ? <p className="mt-5 text-base leading-7 text-[var(--pb-graphite)]">{category.outro}</p> : null}
+                    </div>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </GsapReveal>
 
-      <section className="bg-[var(--pb-oled)] px-5 pb-16 md:px-8 md:pb-24">
-        <div className="mx-auto grid max-w-7xl gap-12 border-t border-[rgba(245,239,233,0.14)] pt-14 lg:grid-cols-[0.75fr_1fr]">
-          <div>
-            <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Machine capabilities.
+      <GsapReveal>
+        <section className="bg-black px-5 py-16 md:px-8 md:py-24">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_0.82fr]">
+            <figure className="pb-media-shadow relative min-h-[28rem] overflow-hidden border border-[var(--pb-line)]" data-image-reveal>
+              <Image
+                alt={problendAssets.generatedMachineInteractionPayment.alt}
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                src={problendAssets.generatedMachineInteractionPayment.src}
+                data-parallax
+              />
+              <div aria-hidden className="absolute right-[4%] top-[20%] h-[34%] w-[48%] bg-black/42 backdrop-blur-[6px]" />
+              <div aria-hidden className="absolute left-[44%] top-[71%] h-[16%] w-[23%] bg-black/50 backdrop-blur-[4px]" />
+            </figure>
+            <h2 className="pb-text-balance font-[var(--font-display)] text-5xl font-semibold leading-[0.95] text-[var(--pb-cream)] md:text-7xl" data-reveal>
+              {productOfferingsContent.conclusion}
             </h2>
-            <p className="mt-5 text-base leading-8 text-[var(--pb-muted)]">
-              The machine is part of the product experience: payment, monitoring, nutrition information, and reliable
-              service are designed into every placement.
-            </p>
           </div>
-          <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
-            {machineCapabilities.map((capability) => (
-              <p className="border-b border-[rgba(245,239,233,0.16)] pb-3 text-sm text-[var(--pb-muted)]" key={capability}>
-                {capability}
-              </p>
-            ))}
-          </div>
-          <div className="lg:col-start-2">
-            <PublicLink href={publicCtas.submitOpportunity.href} label={publicCtas.submitOpportunity.label} />
-          </div>
-        </div>
-      </section>
+        </section>
+      </GsapReveal>
     </main>
   );
 }

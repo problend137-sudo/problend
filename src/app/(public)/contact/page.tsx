@@ -1,90 +1,115 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { PublicPageHero } from "@/components/public/PublicPageHero";
-import { pageVisuals, problendAssets } from "@/content/assets";
-import { contactDetails, routeMetadata, workingHours } from "@/content/site";
+import { GsapReveal } from "@/components/public/GsapReveal";
+import { problendAssets } from "@/content/assets";
+import { contactDetails, contactPageContent, routeMetadata, workingHours } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.contact;
-
-const messageFields = ["First Name", "Last Name", "Email", "Message"] as const;
 
 export default function ContactPage() {
   return (
     <main>
-      <PublicPageHero
-        body="Reach ProBlend for machine placement, product offerings, flavour conversations, or business solution enquiries."
-        image={pageVisuals.contact}
-        imagePosition="center"
-        title="Contact Us"
-      />
-
-      <section className="bg-[var(--pb-oled)] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.85fr_1fr]">
-          <div>
-            <Image
-              alt={problendAssets.logo.alt}
-              className="object-contain"
-              height={70}
-              src={problendAssets.logo.src}
-              width={193}
-            />
-            <h2 className="mt-8 font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Start the ProBlend conversation.
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-8 text-[var(--pb-muted)]">
-              Share the venue, product, or partnership context clearly so the ProBlend team can respond with the right
-              next conversation.
-            </p>
+      <GsapReveal>
+        <section className="bg-[var(--pb-black)] px-5 py-16 md:px-8 md:py-24">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.85fr_1fr]">
+            <div>
+              <h1 className="font-[var(--font-display)] text-6xl font-bold leading-[0.86] md:text-8xl" data-reveal>
+                {contactPageContent.title}
+              </h1>
+              <h2 className="mt-8 font-[var(--font-display)] text-5xl font-semibold leading-none text-[var(--pb-green)]" data-reveal>
+                {contactPageContent.heading}
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--pb-muted)]" data-reveal>
+                {contactPageContent.body}
+              </p>
+            </div>
+            <figure className="pb-media-shadow relative min-h-[28rem] overflow-hidden border border-[var(--pb-line)]" data-image-reveal>
+              <Image
+                alt={problendAssets.generatedVenuePlacementProof.alt}
+                className="object-cover"
+                fill
+                loading="eager"
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src={problendAssets.generatedVenuePlacementProof.src}
+                style={{ objectPosition: "70% center" }}
+              />
+            </figure>
           </div>
+        </section>
+      </GsapReveal>
 
-          <div className="grid gap-10">
-            <address className="not-italic">
-              <h3 className="font-[var(--font-barlow-condensed)] text-4xl font-semibold">Official contact</h3>
-              <div className="mt-6 grid gap-4 text-base leading-8 text-[var(--pb-muted)]">
-                <a className="underline-offset-8 transition hover:text-[var(--pb-cream)] hover:underline" href={`mailto:${contactDetails.email}`}>
+      <GsapReveal>
+        <section className="bg-black px-5 py-16 md:px-8 md:py-24">
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="grid content-start gap-9" data-reveal>
+              <address className="grid gap-4 not-italic text-base leading-8 text-[var(--pb-muted)]">
+                <p>{contactDetails.address}</p>
+                <a className="underline-offset-8 hover:text-[var(--pb-cream)] hover:underline" href={`mailto:${contactDetails.email}`}>
                   {contactDetails.email}
                 </a>
                 {contactDetails.phones.map((phone) => (
                   <a
-                    className="underline-offset-8 transition hover:text-[var(--pb-cream)] hover:underline"
-                    href={`tel:${phone.replaceAll(" ", "")}`}
+                    className="underline-offset-8 hover:text-[var(--pb-cream)] hover:underline"
+                    href={phone.startsWith("=") ? undefined : `tel:${phone}`}
                     key={phone}
                   >
                     {phone}
                   </a>
                 ))}
-                <p>{contactDetails.address}</p>
-              </div>
-            </address>
+              </address>
 
-            <div className="border-t border-[rgba(245,239,233,0.16)] pt-8">
-              <h3 className="font-[var(--font-barlow-condensed)] text-4xl font-semibold">Message details</h3>
-              <p className="mt-4 text-sm leading-7 text-[var(--pb-muted)]">
-                Include these details when emailing the team so product, placement, or partnership enquiries can be routed
-                clearly.
-              </p>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {messageFields.map((field) => (
-                  <div className="border-b border-[rgba(245,239,233,0.16)] pb-3 text-sm text-[var(--pb-muted)]" key={field}>
+              <div className="grid gap-3 text-base text-[var(--pb-muted)]">
+                {contactPageContent.socialLinks.map((label) => (
+                  <p key={label}>{label}</p>
+                ))}
+              </div>
+
+              <div className="border-t border-[var(--pb-line)] pt-8">
+                <h2 className="font-[var(--font-display)] text-4xl font-semibold leading-none">
+                  {contactPageContent.workingHoursTitle}
+                </h2>
+                <div className="mt-5 grid gap-3 text-base text-[var(--pb-muted)]">
+                  {workingHours.map((slot) => (
+                    <div className="grid grid-cols-[7rem_1fr] gap-4 border-b border-[var(--pb-line)] pb-3" key={slot.days}>
+                      <p>{slot.days}</p>
+                      <p>{slot.hours}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <form className="grid gap-6" data-reveal>
+              <div className="grid gap-6 md:grid-cols-2">
+                {contactPageContent.form.fields.slice(0, 2).map((field) => (
+                  <label className="grid gap-2 text-sm font-semibold text-[var(--pb-muted)]" key={field}>
                     {field}
-                  </div>
+                    <input className="min-h-12 border-b border-[var(--pb-line)] bg-transparent text-[var(--pb-cream)] outline-none focus:border-[var(--pb-green)]" />
+                  </label>
                 ))}
               </div>
-            </div>
-
-            <div className="border-t border-[rgba(245,239,233,0.16)] pt-8">
-              <h3 className="font-[var(--font-barlow-condensed)] text-4xl font-semibold">Working hours</h3>
-              <div className="mt-4 grid gap-2 text-sm leading-7 text-[var(--pb-muted)]">
-                {workingHours.map((slot) => (
-                  <p key={slot.days}>
-                    {slot.days}: {slot.hours}
-                  </p>
-                ))}
+              {contactPageContent.form.fields.slice(2).map((field) => (
+                <label className="grid gap-2 text-sm font-semibold text-[var(--pb-muted)]" key={field}>
+                  {field}
+                  {field === "Message" ? (
+                    <textarea className="min-h-40 resize-y border-b border-[var(--pb-line)] bg-transparent text-[var(--pb-cream)] outline-none focus:border-[var(--pb-green)]" />
+                  ) : (
+                    <input className="min-h-12 border-b border-[var(--pb-line)] bg-transparent text-[var(--pb-cream)] outline-none focus:border-[var(--pb-green)]" />
+                  )}
+                </label>
+              ))}
+              <div className="flex flex-wrap items-center gap-5">
+                <button className="min-h-11 border border-[var(--pb-line-strong)] px-6 text-sm font-bold text-[var(--pb-green)]" type="button">
+                  {contactPageContent.form.submit}
+                </button>
+                <p className="text-sm text-[var(--pb-muted)]">{contactPageContent.form.successText}</p>
               </div>
-            </div>
+            </form>
           </div>
-        </div>
-      </section>
+        </section>
+      </GsapReveal>
     </main>
   );
 }
+

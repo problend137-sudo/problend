@@ -1,21 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --pb-black: #070707;
+  --pb-black: #040504;
   --pb-oled: #000000;
-  --pb-charcoal: #121211;
-  --pb-graphite: #20201e;
-  --pb-cream: #f5efe9;
-  --pb-blush: #f2b7ac;
-  --pb-lavender: #c9b8ff;
-  --pb-amber: #ffb23f;
-  --pb-gold: #d7a842;
-  --pb-bronze: #a9702c;
-  --pb-green: #a8ff5e;
-  --pb-muted: #b9b2aa;
-  --pb-stone: #67615a;
-  --pb-border: rgba(245, 239, 233, 0.16);
-  --pb-radius: 8px;
+  --pb-charcoal: #101210;
+  --pb-graphite: #1c201d;
+  --pb-panel: #151815;
+  --pb-cream: #f2f1ea;
+  --pb-white: #fbfbf6;
+  --pb-muted: #b7b9b2;
+  --pb-dim: #757970;
+  --pb-stone: #50564d;
+  --pb-green: #a8ff3f;
+  --pb-green-strong: #78f01f;
+  --pb-green-dark: #286b18;
+  --pb-line: rgba(242, 241, 234, 0.14);
+  --pb-line-strong: rgba(168, 255, 63, 0.36);
+  --pb-radius: 6px;
 }
 
 * {
@@ -23,7 +24,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   background: var(--pb-black);
   color-scheme: dark;
 }
@@ -32,9 +32,9 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  background: linear-gradient(180deg, #000000 0%, #0d0d0c 42%, #000000 100%);
+  background: var(--pb-black);
   color: var(--pb-cream);
-  font-family: var(--font-barlow), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
   letter-spacing: 0;
 }
 
@@ -58,8 +58,38 @@ a {
 }
 
 ::selection {
-  background: var(--pb-amber);
+  background: var(--pb-green);
   color: var(--pb-black);
+}
+
+.pb-text-balance {
+  text-wrap: balance;
+}
+
+.pb-media-shadow {
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.42);
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .pb-gsap-scope [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+
+  .pb-gsap-scope [data-image-reveal] {
+    opacity: 0;
+    visibility: hidden;
+    clip-path: inset(12% 0% 12% 0%);
+    transform: scale(1.03);
+  }
+}
+
+.pb-scrollbar-hidden {
+  scrollbar-width: none;
+}
+
+.pb-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

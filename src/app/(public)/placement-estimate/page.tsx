@@ -38,7 +38,7 @@ export default function PlacementEstimatePage() {
             />
           </figure>
           <div>
-            <h2 className="font-[var(--font-barlow-condensed)] text-5xl font-semibold leading-[0.95] md:text-7xl">
+            <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-[0.95] md:text-7xl">
               Details to prepare.
             </h2>
             <div className="mt-8 grid gap-3">
