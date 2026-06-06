@@ -1,4 +1,4 @@
-# Next Session Prompt: ProBlend Digital OS Task 8
+# Next Session Prompt: ProBlend Digital OS Task 9
 
 Paste this prompt into the next Codex session.
 
@@ -8,21 +8,21 @@ You are continuing work in `/Users/hemishbiswas/Documents/problend` on branch `m
 
 Your job in this session is to resume the main ProBlend Digital Operating System implementation at:
 
-`Task 8: Admin Dashboard, Operations Views, And Exports`
+`Task 9: Product Explorer, Expansion Map, Case Study Framework, And Motion Layer`
 
 from:
 
 `docs/superpowers/plans/2026-06-05-problend-digital-operating-system-implementation.md`
 
-Implement only Task 8. Do not one-shot Tasks 9-11. Verify Task 8, commit it, then update this file for Task 9 unless the user redirects.
+Implement only Task 9. Do not one-shot Tasks 10-11. Verify Task 9, commit it, then update this file for Task 10 unless the user redirects.
 
 ## Latest Completed Work
 
-- Latest completed implementation commit when this prompt was written: `23cd9180584b32fb915a9680f5d03224ec142481`
-- Latest commit message: `feat: add secure admin login`
+- Latest completed implementation commit when this prompt was written: `929ded0ba3a1cc8f528aa08e8fe6292711622391`
+- Latest commit message: `feat: add admin operations dashboard`
 - Branch: `main`
-- Task 7 is implemented and committed.
-- Current working tree after the Task 7 commit should only have untracked `tmp/` screenshot artifacts plus this handoff edit until the handoff is committed. Do not commit `tmp/` unless the user explicitly asks.
+- Task 8 is implemented and committed.
+- Current working tree after the Task 8 commit should only have untracked `tmp/` screenshot artifacts plus this handoff edit until the handoff is committed. Do not commit `tmp/` unless the user explicitly asks.
 
 ## Completed Plan State
 
@@ -36,26 +36,25 @@ The repo has completed:
 - Partnership Platform redesign after Task 5.
 - Task 6: Placement estimate flow and forecast persistence.
 - Task 7: Built-in admin auth, sessions, setup flow, logout, and minimal protected admin landing.
+- Task 8: Admin dashboard shell, operations pages, immutable forecast config version action, status actions, and CSV exports.
 
-Task 7 added:
+Task 8 added:
 
-- `src/features/admin-auth/passwords.ts` with Argon2id helpers.
-- `src/features/admin-auth/session.ts` with opaque tokens, SHA-256 token hashing, and secure 7-day cookie helpers.
-- `src/features/admin-auth/rate-limit.ts` using `admin_login_attempts`.
-- `src/features/admin-auth/guards.ts` with `requireAdmin()`.
-- `src/features/admin-auth/schemas.ts` and `src/features/admin-auth/actions.ts`.
-- Admin query helpers in `src/db/queries/admin.ts`.
-- `/admin/setup`, `/admin/login`, protected `/admin`, and `/api/admin/logout`.
-- `src/tests/features/admin-auth.test.ts`.
-- A Partnership Platform hero CTA to the public `/placement-estimate` calculator.
+- `src/components/admin/AdminShell.tsx`, `AdminHeader.tsx`, `AdminSidebar.tsx`, `DataTable.tsx`, `StatusPill.tsx`, `ScoreCard.tsx`, and `ForecastConfigEditor.tsx`.
+- Protected admin pages for overview, opportunities, opportunity detail, contacts, calculator, forecast configs, forecast runs, waitlists, activity, and settings.
+- `src/db/queries/admin-operations.ts` for Task 8 dashboard, management, export, and config-version query helpers.
+- `src/features/admin-operations/actions.ts` for opportunity/contact status updates, forecast config version creation, and published need creation.
+- `src/lib/csv.ts`.
+- `src/app/api/admin/export/[dataset]/route.ts` with `requireAdmin()` and `admin.export.created` audit logging.
+- Tests in `src/tests/lib/csv.test.ts`, `src/tests/app/admin-export-route.test.ts`, and `src/tests/features/admin-operations-actions.test.ts`.
 
-## Task 7 Verification Status
+## Task 8 Verification Status
 
-Fresh verification run during Task 7:
+Fresh verification run before the Task 8 commit:
 
 ```bash
-npm run test -- src/tests/features/admin-auth.test.ts
-# PASS: 1 file, 8 tests
+npm test
+# PASS: 11 files, 56 tests
 
 npm run typecheck
 # PASS
@@ -68,72 +67,61 @@ git diff --check
 
 npm run build
 # PASS
-
-npm test
-# PASS: 8 files, 47 tests
 ```
 
 Supabase and database notes:
 
+- Supabase changelog was checked for current database-related breaking changes before DB/CLI work.
+- `docker info` failed with `zsh:1: command not found: docker`.
+- Local Supabase start/reset remains blocked. Do not claim `npx supabase start` or `npx supabase db reset` passed unless rerun in a Docker-capable environment.
 - `npx supabase --version` returned `2.105.0`.
+- CLI help was checked for `supabase`, `supabase db`, `supabase projects`, and `supabase db push`.
 - `npx supabase projects list --output json` showed linked project `tueqoqusbxeldxnnarlv`, name `problend`, region `ap-south-1`, Postgres `17.6.1.127`, status `ACTIVE_HEALTHY`.
-- `npx supabase db push --linked --dry-run` initially reported pending migrations:
-  - `20260606081445_partnership_platform_redesign.sql`
-  - `20260606091603_seed_default_forecast_config.sql`
-- `npx supabase db push --linked --yes` applied both pending migrations to the linked remote database.
-- A post-apply `npx supabase db push --linked --dry-run` returned `Remote database is up to date.`
-- `npx supabase migration list --linked` failed before the push with stale DB password auth for `cli_login_postgres`; use `db push --dry-run` or refresh `SUPABASE_DB_PASSWORD` if exact migration-list output is needed.
-- Docker is unavailable locally: `docker info` failed with `zsh:1: command not found: docker`.
-- `npx supabase status` failed because it could not connect to the Docker daemon.
-- Local Supabase reset remains blocked. Do not claim `npx supabase start` or `npx supabase db reset` passed unless rerun in a Docker-capable environment.
+- `npx supabase db push --linked --dry-run` returned `Remote database is up to date.`
 
 Browser verification notes:
 
-- Browser/IAB local URL verification was blocked again with `net::ERR_BLOCKED_BY_CLIENT`.
-- Standalone Playwright fallback used the existing dev server at `http://localhost:3000`.
-- Verified `/admin` redirects unauthenticated users to `/admin/login`.
-- Verified `/admin/setup` and `/admin/login` render on desktop `1280x900` and mobile `390x844` with no horizontal overflow.
-- Verified setup invalid-key error state: `Invalid setup key.`
-- Verified login invalid-input error state: `Invalid email or password.`
-- Verified `/business-solutions` has the public `/placement-estimate` CTA in the Partnership Platform hero and footer.
-- Browser auth success path was blocked locally because there is no reachable local database and no shell `DATABASE_URL` for the remote database. Tests mock DB behavior for setup/login success.
-- Screenshots were written under `tmp/task7-browser-verification/`; keep `tmp/` untracked.
+- Browser/IAB worked against the existing dev server at `http://localhost:3000`.
+- Verified `/admin/opportunities` redirects unauthenticated users to `/admin/login`.
+- Verified every Task 8 private route redirects unauthenticated users to `/admin/login`: `/admin`, `/admin/opportunities`, `/admin/contacts`, `/admin/calculator`, `/admin/forecast-configs`, `/admin/forecast-runs`, `/admin/waitlists`, `/admin/activity`, and `/admin/settings`.
+- Verified `/business-solutions` loads, includes the placement-estimate path, has meaningful content, and shows no browser error overlay or console errors.
+- Verified mobile `390x844` unauthenticated admin login has no horizontal overflow and no error overlay.
+- Verified unauthenticated `/api/admin/export/opportunities` returns a `307` redirect to `/admin/login`.
+- Authenticated admin success path, admin CRUD/browser workflow, and CSV download in-browser were blocked locally because there is no reachable local database/session and no shell `DATABASE_URL` for the remote database. Tests mock DB behavior for protected actions/export.
 
 ## Placement Calculator Boundary
 
-The placement calculator is intentionally public at `/placement-estimate`.
+The placement calculator remains public at `/placement-estimate`.
 
-Task 7 added a contextual `Run placement estimate` CTA in the Partnership Platform hero (`/business-solutions`) so partners can reach the public calculator from the partnership flow. Task 8 should add the private `/admin/calculator` operations page for reviewing calculator submissions and linked forecast runs. Do not move the public calculator into admin, and do not expose forecast configs, scoring internals, exports, or audit logs publicly.
+Task 8 added the private `/admin/calculator` operations page for reviewing calculator submissions and linked forecast runs. Do not move the public calculator into admin, and do not expose forecast configs, scoring internals, exports, or audit logs publicly.
 
-## Current Task 8 Reality Check
+## Current Task 9 Reality Check
 
 Before editing, inspect:
 
 1. `docs/superpowers/specs/2026-06-05-problend-digital-operating-system-design.md`
 2. `docs/superpowers/plans/2026-06-05-problend-digital-operating-system-implementation.md`
-3. `docs/supabase.md`
-4. `src/db/schema.ts`
-5. `src/db/queries/admin.ts`
-6. `src/db/queries/analytics.ts`
-7. Existing query files in `src/db/queries/`
-8. `src/features/admin-auth/guards.ts`
-9. `src/app/admin/(protected)/layout.tsx`
-10. `src/app/admin/(protected)/page.tsx`
-11. Existing public action tests and admin auth tests.
+3. `src/content/products.ts`
+4. `src/content/case-studies.ts`
+5. `src/app/(public)/page.tsx`
+6. `src/app/(public)/product-offerings/page.tsx`
+7. `src/app/(public)/business-solutions/page.tsx`
+8. Existing public components in `src/components/public/`
+9. Existing GSAP usage in `src/components/public/GsapReveal.tsx`
+10. Existing public tests.
 
 ## Mandatory Skills
 
 Use relevant skills explicitly:
 
 - `superpowers:using-superpowers`
-- `superpowers:executing-plans` unless independent subagent work is available, then use `superpowers:subagent-driven-development`
-- `superpowers:test-driven-development` before implementing Task 8 behavior such as CSV export, status updates, forecast config version creation, or query contracts
+- `superpowers:executing-plans` unless independent subagent work is available and explicitly authorized, then use `superpowers:subagent-driven-development`
+- `superpowers:test-driven-development` before implementing Task 9 behavior
 - `superpowers:verification-before-completion` before claiming completion or committing
 - `superpowers:systematic-debugging` if any verification command fails
-- `supabase:supabase` before database, migration, RLS, Supabase CLI, or remote DB behavior
-- `build-web-apps:frontend-app-builder` before building/changing admin dashboard UI
+- `build-web-apps:frontend-app-builder` before building/changing public UI
 - `build-web-apps:react-best-practices` for React/Next implementation
-- `browser:control-in-app-browser` for rendered local verification; if Browser/IAB still blocks local URLs, use standalone Playwright and report the fallback
+- `browser:control-in-app-browser` for rendered local verification; Browser/IAB worked during Task 8
 
 ## Product Guardrails
 
@@ -141,82 +129,53 @@ Keep these constraints active:
 
 - No public visitor accounts.
 - Continue built-in admin auth; do not add Clerk/Auth0/Supabase Auth.
-- Every private page/action/export must call `requireAdmin()` or otherwise prove the admin session before reading private data.
 - Public pages must not expose admin dashboards, scoring internals, forecast config controls, exports, or audit logs.
-- Admin UI should be quiet, dense, operational, and work-focused; no marketing hero treatment for admin pages.
-- Do not expose session tokens, password hashes, setup keys, forecast assumption internals, or audit metadata in public UI/logs.
-- Keep `/placement-estimate` public and `/admin/calculator` private.
+- Public expansion map may show target markets and public deployment story, but not private opportunity records or internal counts.
+- Product Explorer should use existing `src/content/products.ts`; do not reintroduce demo Wix store products.
+- Keep admin UI private and separate from Task 9 public visual work.
+- Use GSAP intentionally, respect `prefers-reduced-motion`, and avoid continuous decorative animation.
 
-## Task 8 Scope
+## Task 9 Scope
 
 Implement only:
 
-`Task 8: Admin Dashboard, Operations Views, And Exports`
+`Task 9: Product Explorer, Expansion Map, Case Study Framework, And Motion Layer`
 
 Expected files from the plan:
 
-- Create `src/components/admin/AdminShell.tsx`
-- Create `src/components/admin/AdminHeader.tsx`
-- Create `src/components/admin/AdminSidebar.tsx`
-- Create `src/components/admin/DataTable.tsx`
-- Create `src/components/admin/StatusPill.tsx`
-- Create `src/components/admin/ScoreCard.tsx`
-- Create `src/components/admin/ForecastConfigEditor.tsx`
-- Create admin pages under `src/app/admin/`
-- Create `src/lib/csv.ts`
-- Create `src/app/api/admin/export/[dataset]/route.ts`
+- Create `src/components/public/ProductExplorer.tsx`
+- Create `src/components/public/ExpansionMap.tsx`
+- Modify `src/app/(public)/product-offerings/page.tsx`
+- Modify `src/app/(public)/business-solutions/page.tsx`
+- Modify `src/app/(public)/page.tsx`
+- Modify `src/content/case-studies.ts`
 
-Modify supporting query files as needed. Do not implement Task 9 public product explorer, expansion map, case studies, or motion work.
+Do not implement Task 10 analytics, health, SEO, or policy verification work.
 
-## Required Task 8 Behavior
+## Required Task 9 Behavior
 
-Task 8 must provide:
+Task 9 must provide:
 
-1. Admin shell:
-   - Sidebar routes: Overview, Opportunities, Contacts, Calculator, Forecast Configs, Forecast Runs, Waitlists, Activity, Settings.
-   - Header with current admin name and logout action.
-   - Mobile drawer-style navigation with visible focus states.
-2. `/admin` overview:
-   - New opportunities count.
-   - New opportunity applications count.
-   - New contact submissions count.
-   - Calculator submissions count.
-   - Active forecast config version.
-   - Recent activity.
-   - Only a small `View site` public link.
-3. Management pages:
-   - `/admin/opportunities`: list/search/filter by status, city, state, commercial intent.
-   - `/admin/opportunities/[id]`: full record, events, latest score, forecast runs, status update.
-   - `/admin/opportunities`: include `Published needs` and `Applications` tabs.
-   - `/admin/contacts`: contact submissions and status updates.
-   - `/admin/calculator`: calculator submissions and linked forecast runs.
-   - `/admin/forecast-configs`: active config, version list, compare two versions, create new version.
-   - `/admin/forecast-runs`: stored input/output/assumption snapshots.
-   - `/admin/waitlists`: waitlist entries.
-   - `/admin/activity`: audit and activity logs.
-   - `/admin/settings`: admin account overview and setup status.
-4. Forecast config editor:
-   - Edit commercial, behavioral, venue multiplier, geographic multiplier, and operational assumption categories.
-   - Saving creates a new `forecast_config_versions` row and never mutates an existing version.
-5. CSV exports:
-   - Create `src/lib/csv.ts`.
-   - `/api/admin/export/[dataset]` supports `opportunities`, `opportunity-applications`, `contacts`, `calculator`, `waitlists`, and `forecast-runs`.
-   - Export route must call `requireAdmin()` and write audit log `admin.export.created`.
-
-## TDD Guidance
-
-Write failing tests before production code.
-
-Recommended tests:
-
-- `toCsv()` quotes values, escapes quotes, preserves headers, and returns an empty string for empty rows.
-- Export route rejects unsupported datasets.
-- Export route requires admin and writes `admin.export.created`.
-- Admin dashboard query helpers return overview counts and active forecast config version.
-- Forecast config save action creates a new version instead of mutating the existing version.
-- Status update actions require admin and write activity/audit records.
-
-Run targeted RED tests before implementation, then implement the smallest code needed to pass.
+1. Product Explorer:
+   - Product tabs for four flavours from `src/content/products.ts`.
+   - Nutrition display framework.
+   - Machine capability panel: cashless payments, GPRS tracking, inventory monitoring, analytics, remote monitoring, predictive restocking.
+   - Customization notes for protein content and flavour intensity.
+2. Expansion Map:
+   - Interactive visual for India deployment and opportunity categories.
+   - Existing base: New Delhi address.
+   - Target markets: Mumbai, Pune, Bengaluru, Hyderabad, Chennai, Ahmedabad, Kolkata, Jaipur.
+   - Public page must not reveal private opportunity records or counts.
+3. Case study framework:
+   - `caseStudies` content shape with slug, title, venue type, city, summary, metrics, body, and publication flag.
+   - Public case-study section renders only published items.
+   - Admin data model already exists for future CMS-ready editing; do not build admin editing in Task 9.
+4. GSAP motion layer:
+   - Character-based hero reveal on the home page.
+   - Scroll storytelling for machine capability sections.
+   - Product/flavour reveal in Product Explorer.
+   - Animated calculator output transitions.
+   - Admin dashboard micro-interactions only where they clarify state.
 
 ## Required Verification
 
@@ -229,49 +188,34 @@ npm run build
 git diff --check
 ```
 
-Run full tests if shared query/action/export patterns changed:
+Run full tests if shared public component/content behavior changed:
 
 ```bash
 npm test
 ```
 
-Supabase/local DB:
-
-- Check Docker first. If Docker remains unavailable, record the exact failure and do not claim local DB reset passed.
-- Check remote project health and remote migration status/dry-run before any live DB-dependent browser success claims.
-- If Docker is available, run:
-
-```bash
-npx supabase start
-npx supabase db reset
-```
-
 Browser verification:
 
 1. Start the app with `npm run dev` or use an existing dev server for this repo.
-2. Log in as admin. If local DB is unavailable, auth success is blocked; report it and rely on tests/mocks only for DB behavior.
-3. Open every Task 8 admin route.
-4. Search and filter opportunities.
-5. Create a published opportunity post for `Looking for operators`.
-6. Confirm the published post appears on `/business-solutions` while logged out.
-7. Change a contact status.
-8. Create a new forecast config version.
-9. Export opportunities CSV.
-10. Confirm unauthenticated `/admin/opportunities` redirects to `/admin/login`.
-11. Confirm desktop and mobile have no horizontal overflow or text overlap.
+2. Open `/`.
+3. Verify hero copy reveals without overlap.
+4. Scroll through Home, Product Offerings, and Business Solutions.
+5. Confirm product explorer tabs update content.
+6. Confirm public map does not show internal opportunity records.
+7. Use a mobile viewport and confirm text, forms, nav, and product tabs fit without horizontal overflow.
 
-## Commit Task 8
+## Commit Task 9
 
 After fresh verification:
 
 ```bash
-git add src/components/admin src/app/admin src/app/api/admin/export src/lib/csv.ts src/db/queries src/features src/tests
-git commit -m "feat: add admin operations dashboard"
+git add src/components/public src/app/\(public\) src/content src/tests
+git commit -m "feat: add product explorer map and motion"
 ```
 
 Then overwrite `docs/superpowers/prompts/NEXT_SESSION.md` with the next paste-ready prompt for:
 
-`Task 9: Product Explorer, Expansion Map, Case Study Framework, And Motion Layer`
+`Task 10: Analytics, Activity Logging, Health, SEO, And Policy Verification`
 
 Include what actually happened, verification status, commit hash, blockers/deviations, and exact next scope.
 
@@ -284,13 +228,11 @@ git commit -m "docs: add next session handoff"
 
 ## Final Response Requirements
 
-In the final response for Task 8, report:
+In the final response for Task 9, report:
 
 - The completed task.
 - Verification results with commands and pass/fail status.
 - Commit hash or hashes.
 - Path to `docs/superpowers/prompts/NEXT_SESSION.md`.
-- Whether Supabase DB reset was run or blocked.
-- Whether remote DB migrations were current.
-- Whether browser admin success was verified or blocked.
+- Whether browser verification passed or was blocked.
 - Whether any work remains or was blocked.
