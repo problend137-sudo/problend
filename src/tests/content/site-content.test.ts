@@ -242,6 +242,13 @@ describe("ProBlend content preservation", () => {
     expect(publishedCaseStudies).toEqual(caseStudies.filter((caseStudy) => caseStudy.published));
     expect(caseStudies.every((caseStudy) => caseStudy.slug && caseStudy.title && caseStudy.venueType && caseStudy.city)).toBe(true);
     expect(caseStudies.every((caseStudy) => caseStudy.summary && caseStudy.metrics.length > 0 && caseStudy.body.length > 0)).toBe(true);
+
+    const publicCaseStudyText = publishedCaseStudies
+      .flatMap((caseStudy) => [caseStudy.title, caseStudy.summary, ...caseStudy.body])
+      .join(" ");
+    expect(publicCaseStudyText).not.toMatch(
+      /private opportunity records|detailed scoring|forecast assumptions|audit history|admin workflows/i
+    );
   });
 
   it("keeps legacy Wix routes compatible with canonical public pages", async () => {

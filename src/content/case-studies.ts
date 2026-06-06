@@ -29,8 +29,8 @@ export const caseStudies = [
       { label: "Public status", value: "Framework ready" }
     ],
     body: [
-      "Published ProBlend case studies will explain the venue context, product fit, machine capability requirements, and partner responsibilities without exposing private opportunity records.",
-      "The framework keeps operational proof public-safe while leaving detailed scoring, forecast assumptions, audit history, and admin workflows inside the private operating system."
+      "Published ProBlend case studies explain the venue context, product fit, machine capability requirements, and partner responsibilities using only approved public details.",
+      "The framework keeps operational proof simple, specific, and partner-safe while directing follow-up questions to the ProBlend team."
     ],
     published: true
   },
