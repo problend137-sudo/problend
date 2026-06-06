@@ -1,12 +1,13 @@
 import { listPublishedOpportunityPosts } from "@/db/queries/opportunities";
 import type { OpportunityPost } from "@/db/schema";
+import { platformAcquisitionContent } from "@/content/site";
 import { OpportunityApplicationForm } from "./OpportunityApplicationForm";
 
 const categoryLabels: Record<string, string> = {
   operator: "Operator",
   venue_access: "Venue Access",
   distributor: "Distributor",
-  strategic_introduction: "Strategic Introduction"
+  strategic_introduction: "Introduction"
 };
 
 const modelLabels: Record<string, string> = {
@@ -27,63 +28,78 @@ async function getPublishedPosts(): Promise<OpportunityPost[]> {
 }
 
 export async function OpportunityPostList({
-  title = "Published Opportunities",
-  body = "Browse open ProBlend partnership and placement opportunities."
+  body = platformAcquisitionContent.board.body,
+  sourcePath = "/business-solutions",
+  title = platformAcquisitionContent.board.title
 }: {
   title?: string;
   body?: string;
+  sourcePath?: string;
 }) {
   const posts = await getPublishedPosts();
 
   return (
-    <section className="bg-[var(--pb-black)] px-5 py-16 md:px-8 md:py-24">
+    <section className="scroll-mt-28 bg-slate-50 px-5 py-14 text-slate-950 md:px-8 md:py-20" id="open-opportunities">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-4 border-t border-[var(--pb-line)] pt-8 lg:grid-cols-[0.75fr_1.25fr]">
+        <div className="grid gap-8 border-y border-slate-300 py-8 lg:grid-cols-[0.36fr_0.64fr]">
           <div>
-            <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-[0.95] text-[var(--pb-cream)] md:text-7xl">
-              {title}
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-8 text-[var(--pb-muted)]">{body}</p>
+            <h2 className="font-[var(--font-display)] text-5xl font-semibold leading-none md:text-7xl">{title}</h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">{body}</p>
           </div>
 
-          <div className="grid gap-6">
-            {posts.length > 0 ? (
-              posts.map((post) => (
-                <article className="border-b border-[var(--pb-line)] pb-8" key={post.id}>
-                  <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold uppercase text-[var(--pb-dim)]">
-                    <p>{categoryLabels[post.category] ?? post.category}</p>
-                    <p>{modelLabels[post.commercialModel] ?? post.commercialModel}</p>
-                    <p>{post.locationScope}</p>
-                  </div>
-                  <h3 className="mt-4 font-[var(--font-display)] text-4xl font-semibold leading-none text-[var(--pb-cream)]">
-                    {post.title}
-                  </h3>
-                  <p className="mt-3 text-base leading-8 text-[var(--pb-muted)]">{post.summary}</p>
+          {posts.length > 0 ? (
+            <div className="grid gap-3">
+              {posts.map((post) => (
+                <article className="border border-slate-300 bg-white" key={post.id}>
+                  <details>
+                    <summary className="grid cursor-pointer list-none gap-5 p-5 lg:grid-cols-[1fr_auto] lg:items-start">
+                      <span>
+                        <span className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-extrabold uppercase tracking-[0.1em] text-slate-500">
+                          <span>{categoryLabels[post.category] ?? post.category}</span>
+                          <span>{post.locationScope}</span>
+                          <span>{modelLabels[post.commercialModel] ?? post.commercialModel}</span>
+                        </span>
+                        <span className="mt-3 block font-[var(--font-display)] text-3xl font-semibold leading-none text-slate-950">
+                          {post.title}
+                        </span>
+                        <span className="mt-3 block max-w-3xl text-base leading-7 text-slate-600">{post.summary}</span>
+                      </span>
 
-                  {post.requirements.length > 0 ? (
-                    <div className="mt-5 grid gap-2">
-                      {post.requirements.map((requirement) => (
-                        <p className="border-t border-[var(--pb-line)] pt-2 text-sm leading-6 text-[var(--pb-muted)]" key={requirement}>
-                          {requirement}
-                        </p>
-                      ))}
+                      <span className="flex min-h-11 items-center justify-center border border-slate-950 bg-slate-950 px-5 text-sm font-extrabold text-white transition-colors duration-200 hover:bg-[var(--pb-green)] hover:text-slate-950">
+                        Respond
+                      </span>
+                    </summary>
+
+                    {post.requirements.length > 0 ? (
+                      <div className="grid gap-2 border-t border-slate-200 px-5 py-4">
+                        {post.requirements.map((requirement) => (
+                          <p className="text-sm leading-6 text-slate-600" key={requirement}>
+                            {requirement}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    <div className="border-t border-slate-200 px-5 pb-5">
+                      <OpportunityApplicationForm opportunityPostId={post.id} sourcePath={sourcePath} />
                     </div>
-                  ) : null}
-
-                  <OpportunityApplicationForm opportunityPostId={post.id} />
+                  </details>
                 </article>
-              ))
-            ) : (
-              <div className="border-y border-[var(--pb-line)] py-8">
-                <p className="font-[var(--font-display)] text-3xl font-semibold text-[var(--pb-cream)]">
-                  No published opportunities are open right now.
-                </p>
-                <p className="mt-3 text-base leading-7 text-[var(--pb-muted)]">
-                  Venue, operator, distributor, and strategic introduction opportunities can still be submitted directly.
-                </p>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="border border-slate-300 bg-white p-6">
+              <p className="font-[var(--font-display)] text-3xl font-semibold leading-none text-slate-950">
+                {platformAcquisitionContent.board.empty}
+              </p>
+              <a
+                className="mt-6 inline-flex min-h-11 items-center border border-slate-950 bg-slate-950 px-5 text-sm font-extrabold text-white transition-colors duration-200 hover:bg-[var(--pb-green)] hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)]"
+                href="#opportunity-intake"
+              >
+                Share an opportunity
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </section>

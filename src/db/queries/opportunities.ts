@@ -1,4 +1,4 @@
-import { and, desc, eq, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, type SQL } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import {
@@ -81,8 +81,8 @@ export async function listPublishedOpportunityPosts() {
   return db
     .select()
     .from(opportunityPosts)
-    .where(eq(opportunityPosts.isPublished, true))
-    .orderBy(desc(opportunityPosts.publishedAt));
+    .where(and(eq(opportunityPosts.isPublished, true), eq(opportunityPosts.status, "open")))
+    .orderBy(asc(opportunityPosts.displayOrder), desc(opportunityPosts.publishedAt), desc(opportunityPosts.createdAt));
 }
 
 export async function listOpportunityPosts() {

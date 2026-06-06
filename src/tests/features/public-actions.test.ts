@@ -57,6 +57,7 @@ const validContact = {
 };
 
 const validOpportunity = {
+  opportunityKind: "venue",
   identityType: "venue_owner",
   contactName: "Riya Kapoor",
   designation: "Founder",
@@ -85,6 +86,41 @@ const validOpportunity = {
   honeypot: ""
 };
 
+const validNetworkOpportunity = {
+  opportunityKind: "city_network",
+  identityType: "distributor",
+  contactName: "Kabir Anand",
+  email: "kabir@example.com",
+  phone: "+918888888888",
+  organizationName: "North Market Access",
+  city: "Chandigarh",
+  state: "Chandigarh",
+  region: "Tri-city",
+  hasMultiCityAccess: true,
+  locationTypes: ["distributor_network"],
+  accessMethod: "We can open conversations with operators across the region.",
+  reachDescription: "Distributor relationships across gyms and office parks.",
+  sourcePath: "/business-solutions",
+  honeypot: ""
+};
+
+const validIntroductionOpportunity = {
+  opportunityKind: "introduction",
+  identityType: "strategic_introducer",
+  contactName: "Meera Nair",
+  email: "meera@example.com",
+  phone: "+917777777771",
+  organizationName: "Campus Advisors",
+  city: "Bengaluru",
+  state: "Karnataka",
+  locationTypes: ["strategic_introduction"],
+  accessMethod: "I can introduce ProBlend to a campus facilities lead.",
+  relationshipStrength: "warm_introduction",
+  authorityLevel: "introducer",
+  sourcePath: "/partner-with-problend",
+  honeypot: ""
+};
+
 const validApplication = {
   opportunityPostId: "7b096d77-2196-480f-b8d6-4dc642f60836",
   contactName: "Neel Sharma",
@@ -95,6 +131,7 @@ const validApplication = {
   state: "Delhi",
   intent: "We can introduce high-footfall college venues.",
   message: "We have direct relationships with two campus administrators.",
+  sourcePath: "/business-solutions",
   honeypot: ""
 };
 
@@ -134,7 +171,30 @@ describe("public acquisition schemas", () => {
   });
 
   it("parses valid and invalid opportunity submissions", () => {
-    expect(opportunitySubmissionSchema.safeParse(validOpportunity).success).toBe(true);
+    const parsedVenue = opportunitySubmissionSchema.safeParse(validOpportunity);
+    const parsedNetwork = opportunitySubmissionSchema.safeParse(validNetworkOpportunity);
+    const parsedIntroduction = opportunitySubmissionSchema.safeParse(validIntroductionOpportunity);
+
+    expect(parsedVenue.success).toBe(true);
+    expect(parsedNetwork.success).toBe(true);
+    expect(parsedIntroduction.success).toBe(true);
+
+    if (!parsedVenue.success || !parsedNetwork.success || !parsedIntroduction.success) {
+      throw new Error("Expected branch opportunity fixtures to parse");
+    }
+
+    expect(parsedVenue.data.opportunityKind).toBe("venue");
+    expect(parsedNetwork.data.opportunityKind).toBe("city_network");
+    expect(parsedNetwork.data.relationshipStrength).toBe("unknown");
+    expect(parsedNetwork.data.electricityReadiness).toBe("unknown");
+    expect(parsedNetwork.data.commercialIntent).toBe("open_discussion");
+    expect(parsedIntroduction.data.details).toEqual(
+      expect.objectContaining({
+        branch: "introduction"
+      })
+    );
+
+    expect(opportunitySubmissionSchema.safeParse({ ...validOpportunity, opportunityKind: "open_brief" }).success).toBe(false);
     expect(opportunitySubmissionSchema.safeParse({ ...validOpportunity, honeypot: "bot-filled" }).success).toBe(false);
     expect(opportunitySubmissionSchema.safeParse({ ...validOpportunity, phone: "" }).success).toBe(false);
     expect(opportunitySubmissionSchema.safeParse({ ...validOpportunity, locationTypes: ["not-real"] }).success).toBe(false);
@@ -147,7 +207,13 @@ describe("public acquisition schemas", () => {
   });
 
   it("parses valid and invalid opportunity applications", () => {
-    expect(opportunityApplicationSchema.safeParse(validApplication).success).toBe(true);
+    const parsed = opportunityApplicationSchema.safeParse(validApplication);
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) {
+      throw new Error("Expected valid opportunity application to parse");
+    }
+    expect(parsed.data.sourcePath).toBe("/business-solutions");
     expect(opportunityApplicationSchema.safeParse({ ...validApplication, opportunityPostId: "not-a-uuid" }).success).toBe(false);
     expect(opportunityApplicationSchema.safeParse({ ...validApplication, honeypot: "bot-filled" }).success).toBe(false);
   });
@@ -175,6 +241,9 @@ describe("public acquisition actions", () => {
         requirements: [],
         isPublished: true,
         publishedAt: new Date(),
+        status: "open",
+        displayOrder: 0,
+        closesAt: null,
         createdBy: null,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -248,13 +317,18 @@ describe("public acquisition actions", () => {
     expect(result).toEqual({
       ok: true,
       id: "opportunity-id",
-      message: "Thanks. ProBlend has received the opportunity details."
+      message: "Thanks. We've received it and will review it."
     });
     expect(createOpportunity).toHaveBeenCalledWith(
       expect.objectContaining({
         city: "New Delhi",
         identityType: "venue_owner",
-        locationTypes: ["gym", "office_campus"]
+        locationTypes: ["gym", "office_campus"],
+        opportunityKind: "venue",
+        sourcePath: "/submit-opportunity",
+        details: expect.objectContaining({
+          branch: "venue"
+        })
       })
     );
     expect(writeActivityLog).toHaveBeenCalledWith(
@@ -280,7 +354,8 @@ describe("public acquisition actions", () => {
     expect(createOpportunityApplication).toHaveBeenCalledWith(
       expect.objectContaining({
         opportunityPostId: validApplication.opportunityPostId,
-        email: validApplication.email
+        email: validApplication.email,
+        sourcePath: "/business-solutions"
       })
     );
     expect(writeActivityLog).toHaveBeenCalledWith(

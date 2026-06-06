@@ -15,11 +15,13 @@ const relationshipStrengths = [
   "decision_maker",
   "strong_relationship",
   "warm_introduction",
-  "cold_access"
+  "cold_access",
+  "unknown"
 ] as const;
 
 const authorityLevels = ["final_decision", "influencer", "introducer", "unknown"] as const;
 const readinessStates = ["ready", "can_arrange", "not_available", "unknown"] as const;
+const opportunityKinds = ["venue", "city_network", "introduction"] as const;
 
 const commercialIntents = [
   "purchase",
@@ -91,34 +93,69 @@ const sourcePath = (fallback: string) =>
 
 const honeypot = z.union([z.literal(""), z.undefined()]).optional();
 
-export const opportunitySubmissionSchema = z.object({
-  identityType: z.enum(identityTypes),
-  contactName: z.string().trim().min(1, "Contact name is required.").max(180),
-  designation: optionalText(180),
-  email: z.string().trim().email("Enter a valid email address.").max(220),
-  phone: z.string().trim().min(1, "Phone is required.").max(80),
-  organizationName: optionalText(220),
-  city: z.string().trim().min(1, "City is required.").max(140),
-  state: z.string().trim().min(1, "State is required.").max(140),
-  region: optionalText(160),
-  hasMultiCityAccess: booleanFromForm.default(false),
-  locationTypes: stringArray,
-  accessMethod: z.string().trim().min(1, "Access details are required.").max(1200),
-  relationshipStrength: z.enum(relationshipStrengths),
-  authorityLevel: z.enum(authorityLevels),
-  venueCount: optionalInteger,
-  approximateDailyFootfall: optionalInteger,
-  reachDescription: optionalText(1200),
-  expectedMachineCount: optionalInteger,
-  availableSpace: optionalText(800),
-  electricityReadiness: z.enum(readinessStates),
-  internetReadiness: z.enum(readinessStates),
-  siteAccessConstraints: optionalText(1200),
-  commercialIntent: z.enum(commercialIntents),
-  notes: optionalText(3000),
-  sourcePath: sourcePath("/submit-opportunity"),
-  honeypot
-});
+export const opportunitySubmissionSchema = z
+  .object({
+    opportunityKind: z.enum(opportunityKinds).default("venue"),
+    identityType: z.enum(identityTypes),
+    contactName: z.string().trim().min(1, "Contact name is required.").max(180),
+    designation: optionalText(180),
+    email: z.string().trim().email("Enter a valid email address.").max(220),
+    phone: z.string().trim().min(1, "Phone is required.").max(80),
+    organizationName: optionalText(220),
+    city: optionalText(140),
+    state: optionalText(140),
+    region: optionalText(160),
+    hasMultiCityAccess: booleanFromForm.default(false),
+    locationTypes: stringArray,
+    accessMethod: z.string().trim().min(1, "Access details are required.").max(1200),
+    relationshipStrength: z.enum(relationshipStrengths).default("unknown"),
+    authorityLevel: z.enum(authorityLevels).default("unknown"),
+    venueCount: optionalInteger,
+    approximateDailyFootfall: optionalInteger,
+    reachDescription: optionalText(1200),
+    expectedMachineCount: optionalInteger,
+    availableSpace: optionalText(800),
+    electricityReadiness: z.enum(readinessStates).default("unknown"),
+    internetReadiness: z.enum(readinessStates).default("unknown"),
+    siteAccessConstraints: optionalText(1200),
+    commercialIntent: z.enum(commercialIntents).default("open_discussion"),
+    notes: optionalText(3000),
+    details: z.record(z.string(), z.unknown()).optional(),
+    sourcePath: sourcePath("/business-solutions"),
+    honeypot
+  })
+  .superRefine((data, context) => {
+    if (data.opportunityKind === "venue" && !data.city) {
+      context.addIssue({
+        code: "custom",
+        message: "City is required for a venue.",
+        path: ["city"]
+      });
+    }
+
+    if (data.opportunityKind === "venue" && !data.state) {
+      context.addIssue({
+        code: "custom",
+        message: "State is required for a venue.",
+        path: ["state"]
+      });
+    }
+
+    if (data.opportunityKind === "city_network" && !data.city && !data.region) {
+      context.addIssue({
+        code: "custom",
+        message: "Share a city, region, or area for the network.",
+        path: ["city"]
+      });
+    }
+  })
+  .transform((data) => ({
+    ...data,
+    details: {
+      ...(data.details ?? {}),
+      branch: data.opportunityKind
+    }
+  }));
 
 export const opportunityApplicationSchema = z.object({
   opportunityPostId: z.string().trim().uuid("Choose a valid opportunity."),
@@ -130,6 +167,7 @@ export const opportunityApplicationSchema = z.object({
   state: z.string().trim().min(1, "State is required.").max(140),
   intent: z.string().trim().min(1, "Intent is required.").max(1200),
   message: z.string().trim().min(1, "Message is required.").max(3000),
+  sourcePath: sourcePath("/business-solutions"),
   honeypot
 });
 

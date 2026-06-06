@@ -1,146 +1,137 @@
-# Next Session Prompt: Task 6 Placement Estimate
+# Next Session Prompt: Close Partnership Platform Redesign
 
 Paste this prompt into the next Codex session.
 
 ---
 
-You are continuing work in `/Users/hemishbiswas/Documents/problend` on the ProBlend Digital Operating System.
+You are continuing work in `/Users/hemishbiswas/Documents/problend` on branch `main`.
 
-Task 4, the public website redo, was completed and verified earlier. Task 5, Public Forms And Server-Side Acquisition Actions, was completed in the most recent session. Do not redesign the public website again unless the user explicitly reports a Task 4 or Task 5 regression. Preserve the dark, image-led public design, exact live-site copy anchors, generated ProBlend imagery, GSAP reduced-motion behavior, legacy Wix redirects, and public/private boundary.
+Important context: the previous `NEXT_SESSION.md` pointed at the older Digital Operating System Task 6 placement-estimate flow, but the current dirty tree is the newer Partnership Platform redesign from `docs/superpowers/plans/2026-06-06-partnership-platform-redesign-implementation.md`. Do not jump back to placement-estimate work until this dirty tree is reviewed and committed or the user explicitly redirects.
 
-Your job in the next session is **Task 6: Placement Estimate Flow And Forecast Persistence** from `docs/superpowers/plans/2026-06-05-problend-digital-operating-system-implementation.md`.
+Your immediate job is to close the current uncommitted Partnership Platform redesign work.
 
-Do not proceed to admin auth, dashboards, exports, private/admin pages, user management, or forecast configuration UI work.
+## Current Plan State
 
-## Task 5 Completed Baseline
+The active plan is:
 
-Task 5 added:
+```text
+docs/superpowers/plans/2026-06-06-partnership-platform-redesign-implementation.md
+```
 
-- `src/features/contacts/schemas.ts`
-- `src/features/contacts/actions.ts`
-- `src/features/opportunities/schemas.ts`
-- `src/features/opportunities/actions.ts`
-- `src/features/waitlists/schemas.ts`
-- `src/features/waitlists/actions.ts`
-- `src/lib/request.ts`
+Task 5, Final Verification, was run on June 6, 2026 after a lint fix in `src/components/public/OpportunityForm.tsx`.
+
+The implementation appears to cover Tasks 1-4:
+
+- Schema, migration, query, action, and Zod support for branch-specific opportunity submissions.
+- Public content and route updates for a single Partnership Platform surface.
+- Guided branch form UI in `OpportunityForm`.
+- Compact public board and platform page UI.
+- Shortcut routes for partner, venue, published opportunities, submit opportunity, and city waitlist.
+
+Do not mark historical TDD RED steps complete unless you verify them from actual history; this handoff only records the current working tree and verification evidence.
+
+## Dirty Tree Scope
+
+Expected uncommitted source/doc changes include:
+
+- `docs/superpowers/prompts/NEXT_SESSION.md`
+- `docs/superpowers/plans/2026-06-06-partnership-platform-redesign-implementation.md`
+- `supabase/migrations/20260606081445_partnership_platform_redesign.sql`
+- `src/app/(public)/business-solutions/page.tsx`
+- `src/app/(public)/submit-opportunity/page.tsx`
+- `src/app/(public)/city-waitlist/page.tsx`
+- `src/app/(public)/partner-with-problend/page.tsx`
+- `src/app/(public)/published-opportunities/page.tsx`
+- `src/app/(public)/submit-venue/page.tsx`
 - `src/components/public/ContactForm.tsx`
-- `src/components/public/OpportunityForm.tsx`
 - `src/components/public/OpportunityApplicationForm.tsx`
+- `src/components/public/OpportunityForm.tsx`
 - `src/components/public/OpportunityPostList.tsx`
+- `src/components/public/PublicPageHero.tsx`
+- `src/content/site.ts`
+- `src/db/queries/opportunities.ts`
+- `src/db/schema.ts`
+- `src/features/opportunities/actions.ts`
+- `src/features/opportunities/schemas.ts`
+- `src/tests/content/site-content.test.ts`
 - `src/tests/features/public-actions.test.ts`
 
-Public UX wiring now includes:
+`tmp/` contains generated verification screenshots and older screenshot artifacts. Do not commit `tmp/` unless the user explicitly asks.
 
-- `ContactForm` on `/contact`.
-- Waitlist forms on `/contact` and `/business-solutions`.
-- `OpportunityForm` on `/submit-opportunity`.
-- `OpportunityPostList` on `/business-solutions` and `/submit-opportunity`.
-- A restrained `Submit Opportunity` header CTA and footer links for `Submit Opportunity` and `Placement Estimate`.
-- `/business-solutions` platform pathways for venue placement, operator/distributor/introducer partnership, waitlist, published opportunities, and placement estimate.
-- `/placement-estimate` remains discoverable but does not yet persist estimates.
+## Behavior To Preserve
 
-Important Task 5 behavior:
+- `/business-solutions` is now the primary Partnership Platform page.
+- `/partner-with-problend`, `/submit-venue`, and `/submit-opportunity` redirect to `/business-solutions#opportunity-intake`.
+- `/published-opportunities` renders the open-opportunities board.
+- `/city-waitlist` renders a public waitlist form.
+- `OpportunityForm` is one guided branch flow for venue, city/network, introduction, and open-brief paths.
+- `OpportunityForm` must keep its current lint-safe pattern: branch defaults reset in `selectKind`, not via synchronous `setState` calls inside an effect.
+- Public board queries only list published open posts in display order.
+- Opportunity submissions persist `opportunityKind`, `sourcePath`, and branch details.
+- Opportunity applications persist `sourcePath`.
+- Public copy must not expose admin/private concepts such as dashboard, forecast configuration, export, activity log, application tracking, internal, or CRM.
 
-- Contact labels remain exactly `First Name`, `Last Name`, `Email`, `Message`, `Send`.
-- Contact success copy remains exactly `Thanks for submitting!`.
-- Opportunity success copy is `Thanks. ProBlend has received the opportunity details.`
-- Opportunity application success copy is `Thanks. ProBlend has received your application.`
-- Waitlist success copy is `Thanks. ProBlend has recorded your city interest.`
-- Zod schemas reject filled honeypot fields.
-- Opportunity application actions verify the post is in the published opportunity list before inserting.
-- Opportunity location types are bounded to the public option set.
-- Public activity log writes use `actor_type = "public"` and are isolated so a saved primary submission is not reported as failed only because activity logging failed.
-- Public opportunity listings fail closed to the empty state if the local database is unavailable.
+## Verification Already Passed
 
-## Verification Passed In Task 5
-
-Commands run and passed:
+Fresh commands run after the `OpportunityForm` lint fix:
 
 ```bash
-npm run test -- src/tests/features/public-actions.test.ts
-npm run test -- src/tests/content/site-content.test.ts
+npm run test -- src/tests/content/site-content.test.ts src/tests/features/public-actions.test.ts
 npm run typecheck
 npm run lint
 npm run build
+git diff --check
 ```
 
-Browser verification was run on:
+Observed results:
 
-- `/contact`
-- `/submit-opportunity`
-- `/business-solutions`
-- `/placement-estimate`
+- Vitest: 2 test files passed, 24 tests passed.
+- TypeScript: `tsc --noEmit` exited 0.
+- ESLint: `eslint .` exited 0.
+- Next build: exited 0 and generated 16 app routes, including `/business-solutions`, `/city-waitlist`, `/partner-with-problend`, `/published-opportunities`, `/submit-opportunity`, and `/submit-venue`.
+- `git diff --check`: exited 0.
 
-Desktop and 390px mobile checks confirmed:
+Browser note:
 
-- meaningful page content renders,
-- no framework overlays,
-- no error-level console logs,
-- no horizontal overflow,
-- public acquisition paths are visible,
-- visible form labels render,
-- honeypot inputs are hidden from normal users with `tabIndex={-1}` and `autoComplete="off"`,
-- invalid contact, waitlist, and opportunity submissions render field-level error states,
-- no public text leaks the blocked wording: admin, dashboard, score, forecast configuration, export, activity log, application tracking, internal, CRM.
+- The in-app Browser plugin blocked local URLs with `ERR_BLOCKED_BY_CLIENT`.
+- Standalone Playwright was used as the fallback against a production server started with `npm run start -- --port 3001`.
+- Fresh production route checks passed for:
+  - desktop `/business-solutions`
+  - desktop `/published-opportunities`
+  - desktop `/partner-with-problend`
+  - desktop `/submit-venue`
+  - desktop `/submit-opportunity`
+  - mobile 390px `/business-solutions`
+- Each checked route returned HTTP 200, no framework overlay, no client console errors, no page errors, no horizontal overflow, and no blocked public/private terms.
+- Screenshots were written to `tmp/problend-task5-final-verification-prod/`.
+- The temporary production server was stopped.
 
-Local environment note: no local Supabase CLI, Docker, or `psql` was available in the Task 5 session, so browser QA could not perform real database-backed success submissions. Server action success paths were covered with mocked DB query helpers in Vitest.
+Local DB caveat:
+
+- The migration file exists, but this session did not apply it to a local Supabase instance.
+- Browser QA did not perform real database-backed success submissions.
+- Server action behavior is covered by the focused Vitest tests with mocked query helpers.
 
 ## Required Skills
 
 Use relevant skills explicitly:
 
 - `superpowers:using-superpowers`
-- `superpowers:test-driven-development`
-- `superpowers:verification-before-completion`
-- `supabase:supabase` before schema, migration, DB query, RLS, or Supabase CLI work
-- `build-web-apps:frontend-app-builder` for the public placement estimate UX integration
-- `ui-ux-pro-max` if making placement-estimate public UX decisions beyond straightforward form wiring
+- `superpowers:verification-before-completion` before claiming completion or committing
+- `supabase:supabase` before touching migrations, Supabase schema, RLS, or database behavior
+- `browser:control-in-app-browser` if retrying browser verification
+- `superpowers:systematic-debugging` if any verification command fails
 
-## Task 6 Scope
+## Next Steps
 
-Implement Task 6 only:
-
-- Modify `src/features/forecasting/schemas.ts`.
-- Create `src/features/forecasting/actions.ts`.
-- Create `src/components/public/PlacementEstimateForm.tsx`.
-- Update `src/app/(public)/placement-estimate/page.tsx`.
-- Modify `src/db/queries/forecasts.ts`.
-- Modify `src/db/queries/opportunities.ts` only as needed for placement estimate persistence.
-- Create the Task 6 seed migration using the Supabase CLI path specified in the implementation plan.
-
-Do not expose public wording or controls for forecast configuration, internal multipliers, private dashboards, exports, application tracking, scoring models, audit logs, or admin routes.
-
-## Task 6 Implementation Reminders
-
-- Use TDD first.
-- Seed one active forecast config/version using configurable assumptions, not hard-coded engine assumptions.
-- `runPlacementEstimateAction` should validate public input, fetch the active config version, call `calculateForecast`, persist the calculator submission and forecast run, and return public-safe results.
-- Public output may include demand estimate, revenue estimate, recommended machine count, opportunity score/rating, confidence, and reasoning.
-- Do not expose editable assumptions or individual internal multipliers publicly.
-- Keep `/placement-estimate` visually consistent with the Task 4/5 dark ProBlend public design.
-
-## Required Verification For Task 6
-
-Run at minimum:
+1. Run `git status --short --branch` and inspect the current diff. Do not discard uncommitted changes.
+2. Re-run any verification needed if files changed after this handoff.
+3. If the tree still matches this scope, stage the source, docs, and migration changes, excluding `tmp/`.
+4. Commit the redesign separately:
 
 ```bash
-npm run test -- src/tests/features/forecasting-engine.test.ts
-npm run typecheck
-npm run lint
-npm run build
+git add docs/superpowers/plans/2026-06-06-partnership-platform-redesign-implementation.md docs/superpowers/prompts/NEXT_SESSION.md supabase/migrations/20260606081445_partnership_platform_redesign.sql src/content/site.ts src/db/schema.ts src/db/queries/opportunities.ts src/features/opportunities/actions.ts src/features/opportunities/schemas.ts src/tests/content/site-content.test.ts src/tests/features/public-actions.test.ts src/components/public/ContactForm.tsx src/components/public/OpportunityApplicationForm.tsx src/components/public/OpportunityForm.tsx src/components/public/OpportunityPostList.tsx src/components/public/PublicPageHero.tsx 'src/app/(public)/business-solutions/page.tsx' 'src/app/(public)/submit-opportunity/page.tsx' 'src/app/(public)/city-waitlist' 'src/app/(public)/partner-with-problend' 'src/app/(public)/published-opportunities' 'src/app/(public)/submit-venue'
+git commit -m "feat: redesign partnership platform"
 ```
 
-Also run browser verification on `/placement-estimate` at desktop and 390px mobile:
-
-- Form labels visible and not clipped.
-- No horizontal overflow.
-- Loading, success, and error states render.
-- Output renders after a valid estimate.
-- No public forecast configuration controls or private/admin wording appear.
-
-Commit Task 6 separately with:
-
-```bash
-git add src/features/forecasting src/components/public/PlacementEstimateForm.tsx 'src/app/(public)/placement-estimate' supabase/migrations src/db/queries docs/superpowers/prompts/NEXT_SESSION.md
-git commit -m "feat: add placement estimate forecasting flow"
-```
+5. After that commit, ask the user whether to resume the older Digital Operating System Task 6 placement-estimate work or write a fresh prompt for the next priority.

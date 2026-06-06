@@ -65,7 +65,7 @@ export async function submitOpportunityAction(_previousState: ActionResult | nul
     return fieldErrorResult(parsed.error.flatten().fieldErrors);
   }
 
-  const { honeypot: _honeypot, sourcePath, ...submission } = parsed.data;
+  const { honeypot: _honeypot, ...submission } = parsed.data;
 
   try {
     const record = await createOpportunity({
@@ -77,14 +77,15 @@ export async function submitOpportunityAction(_previousState: ActionResult | nul
       entityType: "opportunity",
       entityId: record.id,
       metadata: {
-        sourcePath
+        sourcePath: submission.sourcePath,
+        opportunityKind: submission.opportunityKind
       }
     });
 
     return {
       ok: true,
       id: record.id,
-      message: "Thanks. ProBlend has received the opportunity details."
+      message: "Thanks. We've received it and will review it."
     };
   } catch {
     return {
@@ -122,7 +123,8 @@ export async function submitOpportunityApplicationAction(
       entityType: "opportunity_application",
       entityId: record.id,
       metadata: {
-        opportunityPostId: submission.opportunityPostId
+        opportunityPostId: submission.opportunityPostId,
+        sourcePath: submission.sourcePath
       }
     });
 

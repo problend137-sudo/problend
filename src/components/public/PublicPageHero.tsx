@@ -28,7 +28,7 @@ export function PublicPageHero({
     <section className="relative overflow-hidden border-b border-[var(--pb-line)] bg-[var(--pb-black)] px-5 py-14 md:px-8 md:py-20">
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.82fr_1fr]">
         <div className="relative z-10">
-          <h1 className="pb-text-balance max-w-4xl font-[var(--font-display)] text-6xl font-semibold leading-[0.92] text-[var(--pb-cream)] md:text-8xl">
+          <h1 className="pb-text-balance max-w-4xl font-[var(--font-display)] text-5xl font-semibold leading-[0.92] text-[var(--pb-cream)] md:text-8xl">
             {title}
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--pb-muted)] md:text-xl">{body}</p>

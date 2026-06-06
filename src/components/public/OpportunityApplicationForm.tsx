@@ -11,9 +11,9 @@ type ActionState =
 const initialState: ActionState = null;
 
 const inputClass =
-  "min-h-12 w-full border-b border-[var(--pb-line)] bg-transparent px-0 text-base text-[var(--pb-cream)] outline-none transition-colors duration-200 focus:border-[var(--pb-green)] focus:ring-0";
+  "min-h-12 w-full border border-slate-300 bg-white px-4 text-base text-slate-950 outline-none transition-colors duration-200 focus:border-slate-950 focus:ring-2 focus:ring-[rgba(168,255,63,0.65)]";
 
-const labelClass = "grid gap-2 text-sm font-semibold text-[var(--pb-muted)]";
+const labelClass = "grid gap-2 text-sm font-bold text-slate-700";
 
 function FieldError({ errors, name }: { errors?: Record<string, string[]>; name: string }) {
   const message = errors?.[name]?.[0];
@@ -22,7 +22,11 @@ function FieldError({ errors, name }: { errors?: Record<string, string[]>; name:
     return null;
   }
 
-  return <p className="text-sm font-normal text-red-200">{message}</p>;
+  return (
+    <p className="text-sm font-semibold text-red-700" role="alert">
+      {message}
+    </p>
+  );
 }
 
 function HoneypotField() {
@@ -40,7 +44,13 @@ function getFieldErrors(state: ActionState) {
   return state && !state.ok ? state.fieldErrors : undefined;
 }
 
-export function OpportunityApplicationForm({ opportunityPostId }: { opportunityPostId: string }) {
+export function OpportunityApplicationForm({
+  opportunityPostId,
+  sourcePath = "/business-solutions"
+}: {
+  opportunityPostId: string;
+  sourcePath?: string;
+}) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(submitOpportunityApplicationAction, initialState);
   const fieldErrors = getFieldErrors(state);
@@ -52,9 +62,14 @@ export function OpportunityApplicationForm({ opportunityPostId }: { opportunityP
   }, [state]);
 
   return (
-    <form action={formAction} className="mt-6 grid gap-5 border-t border-[var(--pb-line)] pt-6" ref={formRef}>
+    <form action={formAction} className="mt-5 grid gap-5 border-t border-slate-200 pt-5" ref={formRef}>
       <input name="opportunityPostId" type="hidden" value={opportunityPostId} />
+      <input name="sourcePath" type="hidden" value={sourcePath} />
       <HoneypotField />
+
+      <div>
+        <p className="font-[var(--font-display)] text-2xl font-semibold leading-none text-slate-950">Respond</p>
+      </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className={labelClass}>
@@ -90,7 +105,7 @@ export function OpportunityApplicationForm({ opportunityPostId }: { opportunityP
       </div>
 
       <label className={labelClass}>
-        Intent
+        What can you bring?
         <input className={inputClass} name="intent" type="text" />
         <FieldError errors={fieldErrors} name="intent" />
       </label>
@@ -103,13 +118,13 @@ export function OpportunityApplicationForm({ opportunityPostId }: { opportunityP
 
       <div className="flex flex-wrap items-center gap-5">
         <button
-          className="min-h-11 border border-[var(--pb-line-strong)] px-6 text-sm font-bold text-[var(--pb-green)] transition-colors duration-200 hover:border-[var(--pb-green)] hover:bg-[rgba(168,255,63,0.08)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-11 border border-slate-950 bg-slate-950 px-6 text-sm font-extrabold text-white transition-colors duration-200 hover:bg-[var(--pb-green)] hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           type="submit"
         >
-          {isPending ? "Submitting..." : "Apply"}
+          {isPending ? "Submitting..." : "Respond"}
         </button>
-        <p aria-live="polite" className={state?.ok ? "text-sm text-[var(--pb-green)]" : "text-sm text-red-200"}>
+        <p aria-live="polite" className={state?.ok ? "text-sm font-bold text-green-700" : "text-sm font-bold text-red-700"}>
           {state?.message}
         </p>
       </div>

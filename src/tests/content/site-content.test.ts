@@ -10,6 +10,7 @@ import {
   contactPageContent,
   homeContent,
   howItWorksContent,
+  platformAcquisitionContent,
   productOfferingsContent,
   publicNavigation,
   workingHours
@@ -47,7 +48,7 @@ describe("ProBlend content preservation", () => {
     ]);
   });
 
-  it("preserves exact live About, How It Works, Business, and Contact copy anchors", () => {
+  it("preserves exact live About, How It Works, and Contact copy anchors", () => {
     expect(aboutContent.title).toBe("About Us");
     expect(aboutContent.heading).toBe("Fueling Health, Anytime, Anywhere");
     expect(aboutContent.body[0]).toBe(
@@ -64,19 +65,58 @@ describe("ProBlend content preservation", () => {
       "Enjoy & Track"
     ]);
 
-    expect(businessSolutionsContent.title).toBe("Pro Blend Business Solutions");
-    expect(businessSolutionsContent.sections.map((section) => section.title)).toEqual([
-      "Smart Vending Solutions",
-      "Customizable Nutrition for Consumers",
-      "Technology-Driven Operations",
-      "Health & Wellness Solutions",
-      "Marketing & Engagement Support"
-    ]);
-
     expect(contactPageContent.title).toBe("Contact Us");
     expect(contactPageContent.heading).toBe("We’d love to hear from you!");
     expect(contactPageContent.body).toBe(
       "Whether you’re interested in our vending solutions, need support, or have business inquiries, our team is here to help."
+    );
+  });
+
+  it("positions Business Solutions as the Partnership Platform", () => {
+    expect(businessSolutionsContent.title).toBe("Partnership Platform");
+    expect(businessSolutionsContent.body).toBe(
+      "Share a venue, city, network, or introduction. We'll review it and get back if it fits."
+    );
+    expect(platformAcquisitionContent.hero.title).toBe("Help bring ProBlend to the right place.");
+    expect(platformAcquisitionContent.hero.body).toBe(
+      "Share a venue, city, network, or introduction. We'll review it and get back if it fits."
+    );
+    expect(platformAcquisitionContent.formPrompt).toBe("What do you have?");
+    expect(platformAcquisitionContent.actions).toEqual({
+      primary: "Share an opportunity",
+      secondary: "See open opportunities"
+    });
+    expect(platformAcquisitionContent.opportunityTypes.map((item) => item.label)).toEqual([
+      "A venue",
+      "A city or network",
+      "An introduction",
+      "An open ProBlend brief to answer"
+    ]);
+    expect(platformAcquisitionContent.board.title).toBe("Open Opportunities");
+    expect(platformAcquisitionContent.board.body).toBe("Places and partners ProBlend is looking for right now.");
+    expect(platformAcquisitionContent.board.empty).toBe("No open opportunities right now. You can still share one with us.");
+    expect(platformAcquisitionContent.credibility.statement).toBe(
+      "You bring access. ProBlend brings the machine, setup, stocking, cleaning, payments, and support."
+    );
+
+    const publicPlatformText = [
+      businessSolutionsContent.title,
+      businessSolutionsContent.body,
+      platformAcquisitionContent.hero.title,
+      platformAcquisitionContent.hero.body,
+      platformAcquisitionContent.formPrompt,
+      platformAcquisitionContent.actions.primary,
+      platformAcquisitionContent.actions.secondary,
+      ...platformAcquisitionContent.opportunityTypes.flatMap((item) => [item.label, item.body]),
+      platformAcquisitionContent.board.title,
+      platformAcquisitionContent.board.body,
+      platformAcquisitionContent.board.empty,
+      platformAcquisitionContent.credibility.statement,
+      ...platformAcquisitionContent.credibility.points
+    ].join(" ");
+
+    expect(publicPlatformText).not.toMatch(
+      /Smart Vending Solutions|Customizable Nutrition for Consumers|Technology-Driven Operations|Health & Wellness Solutions|Marketing & Engagement Support|Remote Monitoring|Data Insights|Curated board|Direct intake|City signals|View Board|Start Questionnaire|pathway|intent|clearly routed|published opportunity response|real commercial next step/i
     );
   });
 
@@ -157,7 +197,7 @@ describe("ProBlend content preservation", () => {
       "About Us",
       "How It Works",
       "Product Offerings",
-      "Business Solutions",
+      "Partnership Platform",
       "Contact Us"
     ]);
     expect(publicNavigation.map((item) => item.href)).toEqual([

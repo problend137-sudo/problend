@@ -180,29 +180,32 @@ export const opportunities = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     sourceType: text("source_type").notNull().default("external_opportunity_source"),
+    opportunityKind: text("opportunity_kind").notNull().default("venue"),
+    sourcePath: text("source_path").notNull().default("/business-solutions"),
     identityType: text("identity_type").notNull(),
     contactName: text("contact_name").notNull(),
     designation: text("designation"),
     email: citext("email").notNull(),
     phone: text("phone").notNull(),
     organizationName: text("organization_name"),
-    city: text("city").notNull(),
-    state: text("state").notNull(),
+    city: text("city"),
+    state: text("state"),
     region: text("region"),
     hasMultiCityAccess: boolean("has_multi_city_access").notNull().default(false),
     locationTypes: text("location_types").array().notNull().default(emptyTextArray),
     accessMethod: text("access_method").notNull(),
-    relationshipStrength: text("relationship_strength").notNull(),
-    authorityLevel: text("authority_level").notNull(),
+    relationshipStrength: text("relationship_strength"),
+    authorityLevel: text("authority_level"),
     venueCount: integer("venue_count"),
     approximateDailyFootfall: integer("approximate_daily_footfall"),
     reachDescription: text("reach_description"),
     expectedMachineCount: integer("expected_machine_count"),
     availableSpace: text("available_space"),
-    electricityReadiness: text("electricity_readiness").notNull(),
-    internetReadiness: text("internet_readiness").notNull(),
+    electricityReadiness: text("electricity_readiness"),
+    internetReadiness: text("internet_readiness"),
     siteAccessConstraints: text("site_access_constraints"),
-    commercialIntent: text("commercial_intent").notNull(),
+    commercialIntent: text("commercial_intent"),
+    details: jsonb("details").$type<JsonObject>().notNull().default(emptyJsonObject),
     notes: text("notes"),
     status: text("status").notNull().default("new"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -211,13 +214,15 @@ export const opportunities = pgTable(
   (table) => [
     index("opportunities_status_created_idx").on(table.status, table.createdAt.desc()),
     index("opportunities_city_state_idx").on(table.city, table.state),
+    index("opportunities_kind_status_created_idx").on(table.opportunityKind, table.status, table.createdAt.desc()),
+    check("opportunities_opportunity_kind_check", sql`${table.opportunityKind} in ('venue', 'city_network', 'introduction')`),
     check(
       "opportunities_identity_type_check",
       sql`${table.identityType} in ('individual', 'institution', 'company', 'operator', 'distributor', 'venue_owner', 'strategic_introducer')`
     ),
     check(
       "opportunities_relationship_strength_check",
-      sql`${table.relationshipStrength} in ('direct_owner', 'decision_maker', 'strong_relationship', 'warm_introduction', 'cold_access')`
+      sql`${table.relationshipStrength} in ('direct_owner', 'decision_maker', 'strong_relationship', 'warm_introduction', 'cold_access', 'unknown')`
     ),
     check(
       "opportunities_authority_level_check",
@@ -239,6 +244,7 @@ export const opportunities = pgTable(
       "opportunities_status_check",
       sql`${table.status} in ('new', 'reviewing', 'qualified', 'forecasted', 'contacted', 'won', 'lost', 'archived')`
     ),
+    check("opportunities_details_object_check", sql`jsonb_typeof(${table.details}) = 'object'`),
     check("opportunities_venue_count_check", sql`${table.venueCount} is null or ${table.venueCount} >= 0`),
     check(
       "opportunities_approximate_daily_footfall_check",
@@ -264,6 +270,9 @@ export const opportunityPosts = pgTable(
     requirements: text("requirements").array().notNull().default(emptyTextArray),
     isPublished: boolean("is_published").notNull().default(false),
     publishedAt: timestamp("published_at", { withTimezone: true }),
+    status: text("status").notNull().default("draft"),
+    displayOrder: integer("display_order").notNull().default(0),
+    closesAt: timestamp("closes_at", { withTimezone: true }),
     createdBy: uuid("created_by").references(() => adminUsers.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
@@ -271,6 +280,12 @@ export const opportunityPosts = pgTable(
   (table) => [
     index("opportunity_posts_created_by_idx").on(table.createdBy),
     index("opportunity_posts_published_idx").on(table.isPublished, table.publishedAt.desc()),
+    index("opportunity_posts_public_board_idx").on(
+      table.isPublished,
+      table.status,
+      table.displayOrder,
+      table.publishedAt.desc()
+    ),
     check(
       "opportunity_posts_category_check",
       sql`${table.category} in ('operator', 'venue_access', 'distributor', 'strategic_introduction')`
@@ -278,7 +293,9 @@ export const opportunityPosts = pgTable(
     check(
       "opportunity_posts_commercial_model_check",
       sql`${table.commercialModel} in ('purchase', 'revenue_share', 'lease_commission', 'distribution', 'co_investment', 'open_discussion')`
-    )
+    ),
+    check("opportunity_posts_status_check", sql`${table.status} in ('draft', 'open', 'closed', 'archived')`),
+    check("opportunity_posts_display_order_check", sql`${table.displayOrder} >= 0`)
   ]
 );
 
@@ -297,6 +314,7 @@ export const opportunityApplications = pgTable(
     state: text("state").notNull(),
     intent: text("intent").notNull(),
     message: text("message").notNull(),
+    sourcePath: text("source_path").notNull().default("/business-solutions"),
     status: text("status").notNull().default("new"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()

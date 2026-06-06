@@ -1,147 +1,94 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { WaitlistForm } from "@/components/public/ContactForm";
-import { GsapReveal } from "@/components/public/GsapReveal";
+import { OpportunityForm } from "@/components/public/OpportunityForm";
 import { OpportunityPostList } from "@/components/public/OpportunityPostList";
-import { PublicLink } from "@/components/public/PublicLink";
 import { problendAssets } from "@/content/assets";
-import { businessSolutionsContent, publicCtas, routeMetadata } from "@/content/site";
+import { platformAcquisitionContent, routeMetadata } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.businessSolutions;
 export const dynamic = "force-dynamic";
 
-const sectionImages = [
+const proofImages = [
   problendAssets.generatedVenuePlacementProof,
-  problendAssets.generatedShakeDispensing,
-  problendAssets.generatedMachineUpiGym,
-  problendAssets.generatedHeroGymMachineWide,
+  problendAssets.generatedMachineInteractionPayment,
   problendAssets.generatedOperationsRestocking
-] as const;
-
-const platformPathways = [
-  {
-    title: "Bring ProBlend to a venue",
-    body: "Share a gym, office, campus, residence, hospital, mall, or other high-footfall location.",
-    link: publicCtas.submitOpportunity
-  },
-  {
-    title: "Partner as an operator, distributor, or introducer",
-    body: "Express partnership intent for operations, distribution, venue access, or strategic introductions.",
-    link: publicCtas.submitOpportunity
-  },
-  {
-    title: "Join Waitlist",
-    body: "Record city or venue interest where ProBlend should evaluate future availability.",
-    link: { href: "#business-waitlist", label: "Join Waitlist" }
-  },
-  {
-    title: "Placement Estimate",
-    body: "Prepare the venue information needed for a future-facing placement conversation.",
-    link: publicCtas.placementEstimate
-  }
 ] as const;
 
 export default function BusinessSolutionsPage() {
   return (
-    <main>
-      <GsapReveal>
-        <section className="relative isolate min-h-[32rem] overflow-hidden bg-black px-5 py-12 md:px-8 md:py-16">
-          <Image
-            alt={problendAssets.generatedVenuePlacementProof.alt}
-            className="object-cover"
-            fill
-            loading="eager"
-            priority
-            sizes="100vw"
-            src={problendAssets.generatedVenuePlacementProof.src}
-            style={{ objectPosition: "70% center" }}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.72)_46%,rgba(0,0,0,0.18)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,0.92)_70%,rgba(0,0,0,1))]" />
-          <div className="relative z-10 mx-auto flex min-h-[inherit] max-w-7xl items-center">
-            <h1 className="pb-text-balance max-w-3xl font-[var(--font-display)] text-6xl font-bold leading-[0.86] md:text-8xl" data-reveal>
-              {businessSolutionsContent.title}
-            </h1>
-          </div>
-        </section>
-      </GsapReveal>
-
-      <section className="bg-[var(--pb-oled)] px-5 py-14 md:px-8 md:py-20">
-        <div className="mx-auto grid max-w-7xl gap-10 border-y border-[var(--pb-line)] py-8 lg:grid-cols-[0.72fr_1.28fr]">
-          <div>
-            <h2 className="pb-text-balance font-[var(--font-display)] text-5xl font-semibold leading-[0.95] md:text-7xl">
-              Ways to Work With ProBlend
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-8 text-[var(--pb-muted)]">
-              High-intent venue, partnership, waitlist, and estimate paths now sit at the public front door.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            {platformPathways.map((pathway) => (
-              <article className="border-b border-[var(--pb-line)] pb-6" key={pathway.title}>
-                <h3 className="font-[var(--font-display)] text-3xl font-semibold leading-none text-[var(--pb-cream)]">
-                  {pathway.title}
-                </h3>
-                <p className="mt-3 text-base leading-7 text-[var(--pb-muted)]">{pathway.body}</p>
-                <div className="mt-4">
-                  <PublicLink href={pathway.link.href} label={pathway.link.label} />
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <OpportunityPostList />
-
-      <section className="bg-[var(--pb-black)] px-5 py-10 md:px-8 md:py-14">
-        <div className="mx-auto grid max-w-7xl gap-14">
-          {businessSolutionsContent.sections.map((section, index) => (
-            <GsapReveal key={section.title}>
-              <article className="grid gap-8 border-t border-[var(--pb-line)] pt-10 lg:grid-cols-[0.78fr_1.22fr]">
-                <div>
-                  <p className="font-[var(--font-display)] text-4xl font-bold leading-none text-[var(--pb-green)]" data-reveal>
-                    0{index + 1}
-                  </p>
-                  <h2 className="mt-4 pb-text-balance font-[var(--font-display)] text-5xl font-semibold leading-[0.92] md:text-6xl" data-reveal>
-                    {section.title}
-                  </h2>
-                  <figure className="pb-media-shadow relative mt-8 min-h-64 overflow-hidden border border-[var(--pb-line)]" data-image-reveal>
-                    <Image
-                      alt={sectionImages[index].alt}
-                      className="object-cover"
-                      fill
-                      loading={index === 0 ? "eager" : "lazy"}
-                      priority={index === 0}
-                      sizes="(min-width: 1024px) 34vw, 100vw"
-                      src={sectionImages[index].src}
-                      style={{ objectPosition: index === 0 ? "68% center" : "center" }}
-                      data-parallax
-                    />
-                  </figure>
-                </div>
-                <div className="grid content-start gap-7">
-                  {section.items.map((item) => (
-                    <div className="border-b border-[var(--pb-line)] pb-6" data-reveal key={item.label}>
-                      <h3 className="font-[var(--font-display)] text-3xl font-semibold leading-none text-[var(--pb-cream)]">
-                        {item.label}
-                      </h3>
-                      <p className="mt-3 text-base leading-8 text-[var(--pb-muted)]">{item.body}</p>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            </GsapReveal>
-          ))}
-        </div>
-      </section>
-
-      <div id="business-waitlist">
-        <WaitlistForm
-          body="Share the city, venue, or local access interest ProBlend should keep in view."
-          sourcePath="/business-solutions"
+    <main className="bg-[var(--pb-black)]">
+      <section className="relative isolate overflow-hidden border-b border-[var(--pb-line)] px-5 py-14 md:px-8 md:py-20">
+        <Image
+          alt={problendAssets.generatedHeroGymMachineWide.alt}
+          className="object-cover"
+          fill
+          loading="eager"
+          priority
+          sizes="100vw"
+          src={problendAssets.generatedHeroGymMachineWide.src}
+          style={{ objectPosition: "68% center" }}
         />
-      </div>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.94)_0%,rgba(0,0,0,0.82)_48%,rgba(0,0,0,0.46)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-[linear-gradient(180deg,transparent,rgba(4,5,4,0.96))]" />
+
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.92fr_1.08fr] md:items-start lg:grid-cols-[0.86fr_1.14fr] lg:gap-10">
+          <div className="pt-4 lg:pt-10">
+            <h1 className="pb-text-balance max-w-4xl font-[var(--font-display)] text-5xl font-bold leading-[0.92] text-[var(--pb-cream)] md:text-5xl lg:text-7xl xl:text-8xl">
+              {platformAcquisitionContent.hero.title}
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--pb-muted)] md:text-xl">
+              {platformAcquisitionContent.hero.body}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                className="inline-flex min-h-11 items-center border border-[var(--pb-green)] bg-[var(--pb-green)] px-5 text-sm font-extrabold text-[#040504] transition-colors duration-200 hover:bg-transparent hover:text-[var(--pb-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)]"
+                href="#opportunity-intake"
+              >
+                {platformAcquisitionContent.actions.primary}
+              </a>
+              <a
+                className="inline-flex min-h-11 items-center border border-[var(--pb-line)] px-5 text-sm font-extrabold text-[var(--pb-cream)] transition-colors duration-200 hover:border-[var(--pb-green)] hover:text-[var(--pb-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)]"
+                href="#open-opportunities"
+              >
+                {platformAcquisitionContent.actions.secondary}
+              </a>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 p-3 text-slate-950 md:p-4">
+            <OpportunityForm sourcePath="/business-solutions" />
+          </div>
+        </div>
+      </section>
+
+      <OpportunityPostList sourcePath="/business-solutions" />
+
+      <section className="bg-[var(--pb-black)] px-5 py-16 md:px-8 md:py-24">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.42fr_0.58fr]">
+          <div>
+            <h2 className="pb-text-balance font-[var(--font-display)] text-5xl font-semibold leading-[0.94] text-[var(--pb-cream)] md:text-7xl">
+              {platformAcquisitionContent.credibility.statement}
+            </h2>
+          </div>
+
+          <div className="grid gap-6">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {proofImages.map((image) => (
+                <figure className="relative min-h-48 overflow-hidden border border-[var(--pb-line)]" key={image.src}>
+                  <Image alt={image.alt} className="object-cover" fill sizes="(min-width: 768px) 28vw, 100vw" src={image.src} />
+                </figure>
+              ))}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {platformAcquisitionContent.credibility.points.map((point) => (
+                <p className="border-t border-[var(--pb-line)] pt-3 text-base leading-7 text-[var(--pb-muted)]" key={point}>
+                  {point}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

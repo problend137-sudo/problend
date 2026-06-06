@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { submitContactAction } from "@/features/contacts/actions";
 import { submitWaitlistAction } from "@/features/waitlists/actions";
 import { contactPageContent } from "@/content/site";
@@ -13,12 +13,21 @@ type ActionState =
 const initialState: ActionState = null;
 
 const inputClass =
-  "min-h-12 w-full border-b border-[var(--pb-line)] bg-transparent px-0 text-base text-[var(--pb-cream)] outline-none transition-colors duration-200 focus:border-[var(--pb-green)] focus:ring-0";
-
-const selectClass =
-  "min-h-12 w-full border-b border-[var(--pb-line)] bg-[var(--pb-black)] px-0 text-base text-[var(--pb-cream)] outline-none transition-colors duration-200 focus:border-[var(--pb-green)] focus:ring-0";
+  "min-h-12 w-full border border-[var(--pb-line)] bg-[rgba(245,239,233,0.03)] px-4 text-base text-[var(--pb-cream)] outline-none transition-colors duration-200 focus:border-[var(--pb-green)] focus:ring-0";
 
 const labelClass = "grid gap-2 text-sm font-semibold text-[var(--pb-muted)]";
+
+const waitlistInterestOptions = [
+  ["venue", "Venue"],
+  ["operator", "Operator"],
+  ["distributor", "Distributor"],
+  ["customer", "Customer"],
+  ["other", "Other"]
+] as const;
+
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
 
 function FieldError({ errors, name }: { errors?: Record<string, string[]>; name: string }) {
   const message = errors?.[name]?.[0];
@@ -113,6 +122,7 @@ export function WaitlistForm({
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(submitWaitlistAction, initialState);
+  const [interestType, setInterestType] = useState("venue");
   const fieldErrors = getFieldErrors(state);
 
   useEffect(() => {
@@ -131,52 +141,84 @@ export function WaitlistForm({
           <p className="mt-4 max-w-xl text-base leading-7 text-[var(--pb-muted)]">{body}</p>
         </div>
 
-        <form action={formAction} className="grid gap-5" ref={formRef}>
+        <form action={formAction} className="grid gap-6" ref={formRef}>
           <input name="sourcePath" type="hidden" value={sourcePath} />
           <HoneypotField />
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <label className={labelClass}>
-              Name
-              <input autoComplete="name" className={inputClass} name="name" type="text" />
-              <FieldError errors={fieldErrors} name="name" />
-            </label>
-            <label className={labelClass}>
-              Email
-              <input autoComplete="email" className={inputClass} name="email" type="email" />
-              <FieldError errors={fieldErrors} name="email" />
-            </label>
+          <div className="grid gap-5 border-b border-[var(--pb-line)] pb-6">
+            <p className="font-[var(--font-display)] text-2xl font-semibold leading-none text-[var(--pb-cream)]">
+              01 Contact
+            </p>
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className={labelClass}>
+                Name
+                <input autoComplete="name" className={inputClass} name="name" type="text" />
+                <FieldError errors={fieldErrors} name="name" />
+              </label>
+              <label className={labelClass}>
+                Email
+                <input autoComplete="email" className={inputClass} name="email" type="email" />
+                <FieldError errors={fieldErrors} name="email" />
+              </label>
+              <label className={labelClass}>
+                Phone
+                <input autoComplete="tel" className={inputClass} name="phone" type="tel" />
+                <FieldError errors={fieldErrors} name="phone" />
+              </label>
+            </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
-            <label className={labelClass}>
-              Phone
-              <input autoComplete="tel" className={inputClass} name="phone" type="tel" />
-              <FieldError errors={fieldErrors} name="phone" />
-            </label>
-            <label className={labelClass}>
-              City
-              <input autoComplete="address-level2" className={inputClass} name="city" type="text" />
-              <FieldError errors={fieldErrors} name="city" />
-            </label>
-            <label className={labelClass}>
-              State
-              <input autoComplete="address-level1" className={inputClass} name="state" type="text" />
-              <FieldError errors={fieldErrors} name="state" />
-            </label>
+          <div className="grid gap-5 border-b border-[var(--pb-line)] pb-6">
+            <p className="font-[var(--font-display)] text-2xl font-semibold leading-none text-[var(--pb-cream)]">
+              02 Market
+            </p>
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className={labelClass}>
+                City
+                <input autoComplete="address-level2" className={inputClass} name="city" type="text" />
+                <FieldError errors={fieldErrors} name="city" />
+              </label>
+              <label className={labelClass}>
+                State
+                <input autoComplete="address-level1" className={inputClass} name="state" type="text" />
+                <FieldError errors={fieldErrors} name="state" />
+              </label>
+            </div>
           </div>
 
-          <label className={labelClass}>
-            Interest Type
-            <select className={selectClass} defaultValue="venue" name="interestType">
-              <option value="customer">Customer</option>
-              <option value="venue">Venue</option>
-              <option value="operator">Operator</option>
-              <option value="distributor">Distributor</option>
-              <option value="other">Other</option>
-            </select>
+          <div className="grid gap-5">
+            <p className="font-[var(--font-display)] text-2xl font-semibold leading-none text-[var(--pb-cream)]">
+              03 Signal
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {waitlistInterestOptions.map(([value, label]) => {
+                const selected = interestType === value;
+
+                return (
+                  <label
+                    className={cx(
+                      "flex min-h-14 cursor-pointer items-center gap-3 border p-3 text-sm font-semibold transition-colors duration-200",
+                      selected
+                        ? "border-[var(--pb-green)] bg-[rgba(168,255,63,0.08)] text-[var(--pb-cream)]"
+                        : "border-[var(--pb-line)] bg-[rgba(245,239,233,0.03)] text-[var(--pb-muted)] hover:border-[var(--pb-line-strong)]"
+                    )}
+                    key={value}
+                  >
+                    <input
+                      checked={selected}
+                      className="size-5 shrink-0 accent-[var(--pb-green)]"
+                      name="interestType"
+                      onChange={() => setInterestType(value)}
+                      type="radio"
+                      value={value}
+                    />
+                    {label}
+                  </label>
+                );
+              })}
+            </div>
             <FieldError errors={fieldErrors} name="interestType" />
-          </label>
+          </div>
 
           <label className={labelClass}>
             Notes

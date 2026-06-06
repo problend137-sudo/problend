@@ -9,7 +9,7 @@ export const publicNavigation = [
   { href: "/about", label: "About Us" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/product-offerings", label: "Product Offerings" },
-  { href: "/business-solutions", label: "Business Solutions" },
+  { href: "/business-solutions", label: "Partnership Platform" },
   { href: "/contact", label: "Contact Us" }
 ] as const;
 
@@ -18,7 +18,11 @@ export const publicCtas = {
   exploreFeatures: { href: "/product-offerings", label: "Explore Features" },
   contact: { href: "/contact", label: "Contact Us" },
   placementEstimate: { href: "/placement-estimate", label: "Run Placement Estimate" },
-  submitOpportunity: { href: "/submit-opportunity", label: "Submit Opportunity" }
+  partner: { href: "/business-solutions", label: "Share an opportunity" },
+  submitVenue: { href: "/submit-venue", label: "Submit a Venue" },
+  cityWaitlist: { href: "/city-waitlist", label: "Join a City Waitlist" },
+  publishedOpportunities: { href: "/published-opportunities", label: "See open opportunities" },
+  submitOpportunity: { href: "/business-solutions", label: "Share an opportunity" }
 } as const;
 
 export const workingHours = [
@@ -142,95 +146,58 @@ export const productOfferingsContent = {
 } as const;
 
 export const businessSolutionsContent = {
-  title: "Pro Blend Business Solutions",
-  sections: [
+  title: "Partnership Platform",
+  body:
+    "Share a venue, city, network, or introduction. We'll review it and get back if it fits."
+} as const;
+
+export const platformAcquisitionContent = {
+  hero: {
+    title: "Help bring ProBlend to the right place.",
+    body:
+      "Share a venue, city, network, or introduction. We'll review it and get back if it fits."
+  },
+  actions: {
+    primary: "Share an opportunity",
+    secondary: "See open opportunities"
+  },
+  formPrompt: "What do you have?",
+  opportunityTypes: [
     {
-      title: "Smart Vending Solutions",
-      items: [
-        {
-          label: "Convenient Placement:",
-          body:
-            "Machines can be installed at gyms, offices, universities, and fitness centers to generate additional revenue or enhance wellness offerings."
-        },
-        {
-          label: "Revenue Sharing & Commission Models:",
-          body: "Flexible business agreements tailored to partner needs — either through commission per shake or lease-based placement."
-        },
-        {
-          label: "Minimal Operational Burden:",
-          body: "Pro Blend handles installation, maintenance, stocking, and updates. Partners provide space and utilities only."
-        }
-      ]
+      value: "venue",
+      label: "A venue",
+      body: "A gym, campus, office, residence, hospital, retail site, or other place ProBlend should review."
     },
     {
-      title: "Customizable Nutrition for Consumers",
-      items: [
-        {
-          label: "Personalized Shakes:",
-          body: "Offer a variety of flavors and protein blends to match fitness goals, dietary restrictions, and taste preferences."
-        },
-        {
-          label: "Fresh & Safe:",
-          body: "Hygienically prepared shakes with strict quality control standards."
-        },
-        {
-          label: "On-Demand Convenience:",
-          body: "Cashless, quick, and accessible 24/7."
-        }
-      ]
+      value: "city_network",
+      label: "A city or network",
+      body: "A market, distributor network, operator group, or community where ProBlend should expand."
     },
     {
-      title: "Technology-Driven Operations",
-      items: [
-        {
-          label: "Smart Machines:",
-          body: "Track inventory, sales, and consumer preferences in real-time."
-        },
-        {
-          label: "Digital Payments:",
-          body: "Multiple payment options including UPI, cards, and wallets for seamless transactions."
-        },
-        {
-          label: "Remote Monitoring:",
-          body: "GPRS-enabled software for efficient machine management and predictive restocking"
-        }
-      ]
+      value: "introduction",
+      label: "An introduction",
+      body: "A decision-maker, institution, company, or venue contact you can introduce to ProBlend."
     },
     {
-      title: "Health & Wellness Solutions",
-      items: [
-        {
-          label: "Promoting Active Lifestyles:",
-          body: "Encourage healthy eating habits in workplaces, campuses, and gyms."
-        },
-        {
-          label: "Diet-Friendly Options:",
-          body: "Low-sugar, high-protein, and specially curated blends for fitness enthusiasts."
-        },
-        {
-          label: "Brand Alignment:",
-          body: "Partners can showcase commitment to wellness through Pro Blend’s premium nutrition offering."
-        }
-      ]
-    },
-    {
-      title: "Marketing & Engagement Support",
-      items: [
-        {
-          label: "Sampling & Promotions:",
-          body: "Pro Blend can organize on-site tasting events to drive awareness."
-        },
-        {
-          label: "Custom Branding Opportunities:",
-          body: "Co-branding options for partners to enhance visibility."
-        },
-        {
-          label: "Data Insights:",
-          body: "Access analytics on customer preferences and sales trends for smarter business decisions."
-        }
-      ]
+      value: "open_brief",
+      label: "An open ProBlend brief to answer",
+      body: "A specific request from ProBlend that matches your access or capabilities."
     }
-  ]
+  ],
+  board: {
+    title: "Open Opportunities",
+    body: "Places and partners ProBlend is looking for right now.",
+    empty: "No open opportunities right now. You can still share one with us."
+  },
+  credibility: {
+    statement: "You bring access. ProBlend brings the machine, setup, stocking, cleaning, payments, and support.",
+    points: [
+      "Built for gyms, campuses, offices, residences, and other active spaces.",
+      "Cashless vending with fresh shakes prepared on demand.",
+      "ProBlend handles setup, stocking, cleaning, and machine upkeep.",
+      "Partners bring access, space, demand, or market reach."
+    ]
+  }
 } as const;
 
 export const contactPageContent = {
@@ -264,9 +231,9 @@ export const routeMetadata = {
       "Explore ProBlend’s customizable protein shake vending machine solutions. Tailored for businesses, our smart machines deliver on-demand nutrition with convenience, hygiene, and variety."
   },
   businessSolutions: {
-    title: "Business Solutions",
+    title: "Partnership Platform",
     description:
-      "ProBlend offers customizable protein shake vending machine solutions for businesses. Boost wellness at gyms, offices & campuses with smart, healthy nutrition"
+      "Share a venue, city, network, or introduction with ProBlend, or respond to open ProBlend opportunities."
   },
   contact: {
     title: "Contact Us",
@@ -277,9 +244,25 @@ export const routeMetadata = {
     title: "Placement Estimate",
     description: "Prepare venue details for a ProBlend placement estimate conversation."
   },
+  partnerWithProBlend: {
+    title: "Partner with ProBlend",
+    description: "Share a venue, city, network, or introduction with ProBlend."
+  },
+  submitVenue: {
+    title: "Submit a Venue",
+    description: "Submit a specific venue for ProBlend placement consideration."
+  },
+  cityWaitlist: {
+    title: "Join a City Waitlist",
+    description: "Register city or venue demand for future ProBlend availability."
+  },
+  publishedOpportunities: {
+    title: "Open Opportunities",
+    description: "Browse places and partners ProBlend is looking for right now."
+  },
   submitOpportunity: {
     title: "Submit Opportunity",
-    description: "Share a venue, distribution, or strategic introduction opportunity with ProBlend."
+    description: "Redirects to the ProBlend venue submission path."
   }
 } as const;
 
@@ -287,8 +270,7 @@ export const venueTypes = ["Gyms", "Offices", "Universities", "Fitness centers"]
 
 export const placementModels = ["Revenue Sharing & Commission Models:", "lease-based placement"] as const;
 
-export const currentCollaborationNeeds = businessSolutionsContent.sections.slice(0, 3).map((section) => ({
-  title: section.title,
-  body: section.items.map((item) => `${item.label} ${item.body}`).join(" ")
+export const currentCollaborationNeeds = platformAcquisitionContent.opportunityTypes.slice(0, 3).map((opportunityType) => ({
+  title: opportunityType.label,
+  body: opportunityType.body
 }));
-
