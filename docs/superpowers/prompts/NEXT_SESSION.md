@@ -1,4 +1,4 @@
-# Next Session Prompt: ProBlend Digital OS Task 7
+# Next Session Prompt: ProBlend Digital OS Task 8
 
 Paste this prompt into the next Codex session.
 
@@ -8,21 +8,21 @@ You are continuing work in `/Users/hemishbiswas/Documents/problend` on branch `m
 
 Your job in this session is to resume the main ProBlend Digital Operating System implementation at:
 
-`Task 7: Admin Auth, Sessions, And Setup Flow`
+`Task 8: Admin Dashboard, Operations Views, And Exports`
 
 from:
 
 `docs/superpowers/plans/2026-06-05-problend-digital-operating-system-implementation.md`
 
-Implement only Task 7. Do not one-shot Tasks 8-11. Verify Task 7, commit it, then update this file for Task 8 unless the user redirects.
+Implement only Task 8. Do not one-shot Tasks 9-11. Verify Task 8, commit it, then update this file for Task 9 unless the user redirects.
 
 ## Latest Completed Work
 
-- Latest completed implementation commit when this prompt was written: `f4394fc`
-- Latest commit message: `feat: add placement estimate forecasting flow`
+- Latest completed implementation commit when this prompt was written: `23cd9180584b32fb915a9680f5d03224ec142481`
+- Latest commit message: `feat: add secure admin login`
 - Branch: `main`
-- Task 6 is implemented and committed.
-- Current working tree after Task 6 commit should only have untracked `tmp/` screenshot artifacts plus this handoff edit until the handoff is committed. Do not commit `tmp/` unless the user explicitly asks.
+- Task 7 is implemented and committed.
+- Current working tree after the Task 7 commit should only have untracked `tmp/` screenshot artifacts plus this handoff edit until the handoff is committed. Do not commit `tmp/` unless the user explicitly asks.
 
 ## Completed Plan State
 
@@ -35,24 +35,27 @@ The repo has completed:
 - Task 5: Public forms and server-side acquisition actions.
 - Partnership Platform redesign after Task 5.
 - Task 6: Placement estimate flow and forecast persistence.
+- Task 7: Built-in admin auth, sessions, setup flow, logout, and minimal protected admin landing.
 
-Task 6 added:
+Task 7 added:
 
-- `src/features/forecasting/actions.ts` with `runPlacementEstimateAction`.
-- `placementEstimateInputSchema` in `src/features/forecasting/schemas.ts`.
-- `createCalculatorSubmission()` in `src/db/queries/forecasts.ts`.
-- `src/components/public/PlacementEstimateForm.tsx`.
-- Live `/placement-estimate` form and output panel.
-- `src/tests/features/placement-estimate-actions.test.ts`.
-- Seed migration `supabase/migrations/20260606091603_seed_default_forecast_config.sql`.
+- `src/features/admin-auth/passwords.ts` with Argon2id helpers.
+- `src/features/admin-auth/session.ts` with opaque tokens, SHA-256 token hashing, and secure 7-day cookie helpers.
+- `src/features/admin-auth/rate-limit.ts` using `admin_login_attempts`.
+- `src/features/admin-auth/guards.ts` with `requireAdmin()`.
+- `src/features/admin-auth/schemas.ts` and `src/features/admin-auth/actions.ts`.
+- Admin query helpers in `src/db/queries/admin.ts`.
+- `/admin/setup`, `/admin/login`, protected `/admin`, and `/api/admin/logout`.
+- `src/tests/features/admin-auth.test.ts`.
+- A Partnership Platform hero CTA to the public `/placement-estimate` calculator.
 
-## Task 6 Verification Status
+## Task 7 Verification Status
 
-Fresh verification run during Task 6:
+Fresh verification run during Task 7:
 
 ```bash
-npm run test -- src/tests/features/forecasting-engine.test.ts src/tests/features/opportunity-scoring.test.ts src/tests/features/placement-estimate-actions.test.ts
-# PASS: 3 files, 11 tests
+npm run test -- src/tests/features/admin-auth.test.ts
+# PASS: 1 file, 8 tests
 
 npm run typecheck
 # PASS
@@ -60,30 +63,49 @@ npm run typecheck
 npm run lint
 # PASS
 
-npm run build
-# PASS
-
 git diff --check
 # PASS
 
+npm run build
+# PASS
+
 npm test
-# PASS: 7 files, 39 tests
+# PASS: 8 files, 47 tests
 ```
 
-Supabase and browser verification notes:
+Supabase and database notes:
 
 - `npx supabase --version` returned `2.105.0`.
-- `npx supabase projects list --output json` showed linked project `tueqoqusbxeldxnnarlv`, name `problend`, region `ap-south-1`, status `ACTIVE_HEALTHY`.
-- `npx supabase migration list --linked` connected to the remote DB. Remote had `20260605181328`; local pending migrations were `20260606081445` and `20260606091603`.
-- Do not assume pending migrations were applied remotely. Task 6 did not run `supabase migration up --linked`.
+- `npx supabase projects list --output json` showed linked project `tueqoqusbxeldxnnarlv`, name `problend`, region `ap-south-1`, Postgres `17.6.1.127`, status `ACTIVE_HEALTHY`.
+- `npx supabase db push --linked --dry-run` initially reported pending migrations:
+  - `20260606081445_partnership_platform_redesign.sql`
+  - `20260606091603_seed_default_forecast_config.sql`
+- `npx supabase db push --linked --yes` applied both pending migrations to the linked remote database.
+- A post-apply `npx supabase db push --linked --dry-run` returned `Remote database is up to date.`
+- `npx supabase migration list --linked` failed before the push with stale DB password auth for `cli_login_postgres`; use `db push --dry-run` or refresh `SUPABASE_DB_PASSWORD` if exact migration-list output is needed.
 - Docker is unavailable locally: `docker info` failed with `zsh:1: command not found: docker`.
-- Local Supabase reset was blocked. Do not claim `npx supabase start` or `npx supabase db reset` passed unless rerun in a Docker-capable environment.
-- `DATABASE_URL` was missing from the shell; the app falls back to `postgresql://postgres:postgres@127.0.0.1:54322/postgres`, and port `54322` was closed.
-- Browser/IAB local URL verification was blocked with `net::ERR_BLOCKED_BY_CLIENT`.
-- Standalone Playwright fallback verified `/placement-estimate` renders on desktop and mobile with no overlay, no console errors, no horizontal overflow, visible form, and visible output panel.
-- DB-backed browser success output could not be verified locally because there was no reachable database. The form submission showed the expected persistence error state instead.
+- `npx supabase status` failed because it could not connect to the Docker daemon.
+- Local Supabase reset remains blocked. Do not claim `npx supabase start` or `npx supabase db reset` passed unless rerun in a Docker-capable environment.
 
-## Current Task 7 Reality Check
+Browser verification notes:
+
+- Browser/IAB local URL verification was blocked again with `net::ERR_BLOCKED_BY_CLIENT`.
+- Standalone Playwright fallback used the existing dev server at `http://localhost:3000`.
+- Verified `/admin` redirects unauthenticated users to `/admin/login`.
+- Verified `/admin/setup` and `/admin/login` render on desktop `1280x900` and mobile `390x844` with no horizontal overflow.
+- Verified setup invalid-key error state: `Invalid setup key.`
+- Verified login invalid-input error state: `Invalid email or password.`
+- Verified `/business-solutions` has the public `/placement-estimate` CTA in the Partnership Platform hero and footer.
+- Browser auth success path was blocked locally because there is no reachable local database and no shell `DATABASE_URL` for the remote database. Tests mock DB behavior for setup/login success.
+- Screenshots were written under `tmp/task7-browser-verification/`; keep `tmp/` untracked.
+
+## Placement Calculator Boundary
+
+The placement calculator is intentionally public at `/placement-estimate`.
+
+Task 7 added a contextual `Run placement estimate` CTA in the Partnership Platform hero (`/business-solutions`) so partners can reach the public calculator from the partnership flow. Task 8 should add the private `/admin/calculator` operations page for reviewing calculator submissions and linked forecast runs. Do not move the public calculator into admin, and do not expose forecast configs, scoring internals, exports, or audit logs publicly.
+
+## Current Task 8 Reality Check
 
 Before editing, inspect:
 
@@ -93,13 +115,11 @@ Before editing, inspect:
 4. `src/db/schema.ts`
 5. `src/db/queries/admin.ts`
 6. `src/db/queries/analytics.ts`
-7. `src/lib/env.ts`
-8. Existing public action tests for server-action patterns:
-   - `src/tests/features/public-actions.test.ts`
-   - `src/tests/features/placement-estimate-actions.test.ts`
-9. Existing layouts:
-   - `src/app/layout.tsx`
-   - `src/app/(public)/layout.tsx`
+7. Existing query files in `src/db/queries/`
+8. `src/features/admin-auth/guards.ts`
+9. `src/app/admin/(protected)/layout.tsx`
+10. `src/app/admin/(protected)/page.tsx`
+11. Existing public action tests and admin auth tests.
 
 ## Mandatory Skills
 
@@ -107,11 +127,11 @@ Use relevant skills explicitly:
 
 - `superpowers:using-superpowers`
 - `superpowers:executing-plans` unless independent subagent work is available, then use `superpowers:subagent-driven-development`
-- `superpowers:test-driven-development` before implementing Task 7 behavior
+- `superpowers:test-driven-development` before implementing Task 8 behavior such as CSV export, status updates, forecast config version creation, or query contracts
 - `superpowers:verification-before-completion` before claiming completion or committing
 - `superpowers:systematic-debugging` if any verification command fails
 - `supabase:supabase` before database, migration, RLS, Supabase CLI, or remote DB behavior
-- `build-web-apps:frontend-app-builder` before building/changing admin login/setup UI
+- `build-web-apps:frontend-app-builder` before building/changing admin dashboard UI
 - `build-web-apps:react-best-practices` for React/Next implementation
 - `browser:control-in-app-browser` for rendered local verification; if Browser/IAB still blocks local URLs, use standalone Playwright and report the fallback
 
@@ -120,105 +140,96 @@ Use relevant skills explicitly:
 Keep these constraints active:
 
 - No public visitor accounts.
-- Task 7 must implement built-in admin login/setup, not Clerk/Auth0/Supabase Auth.
+- Continue built-in admin auth; do not add Clerk/Auth0/Supabase Auth.
+- Every private page/action/export must call `requireAdmin()` or otherwise prove the admin session before reading private data.
 - Public pages must not expose admin dashboards, scoring internals, forecast config controls, exports, or audit logs.
-- Admin UI should be quiet, dense, operational, and work-focused; do not use marketing hero treatment for admin pages.
-- Use secure cookie defaults: `httpOnly`, `sameSite: "lax"`, path `/`, `secure` in production, 7-day expiry.
-- Do not expose session tokens or password hashes in UI or logs.
-- Login errors must stay generic: `Invalid email or password.`
-- Use `env.ADMIN_SETUP_KEY`; do not hard-code setup secrets.
+- Admin UI should be quiet, dense, operational, and work-focused; no marketing hero treatment for admin pages.
+- Do not expose session tokens, password hashes, setup keys, forecast assumption internals, or audit metadata in public UI/logs.
+- Keep `/placement-estimate` public and `/admin/calculator` private.
 
-## Task 7 Scope
+## Task 8 Scope
 
 Implement only:
 
-`Task 7: Admin Auth, Sessions, And Setup Flow`
+`Task 8: Admin Dashboard, Operations Views, And Exports`
 
 Expected files from the plan:
 
-- Create `src/features/admin-auth/passwords.ts`
-- Create `src/features/admin-auth/rate-limit.ts`
-- Create `src/features/admin-auth/session.ts`
-- Create `src/features/admin-auth/guards.ts`
-- Create `src/features/admin-auth/schemas.ts`
-- Create `src/features/admin-auth/actions.ts`
-- Create `src/app/admin/login/page.tsx`
-- Create `src/app/admin/setup/page.tsx`
-- Create `src/app/api/admin/logout/route.ts`
-- Create `src/tests/features/admin-auth.test.ts`
+- Create `src/components/admin/AdminShell.tsx`
+- Create `src/components/admin/AdminHeader.tsx`
+- Create `src/components/admin/AdminSidebar.tsx`
+- Create `src/components/admin/DataTable.tsx`
+- Create `src/components/admin/StatusPill.tsx`
+- Create `src/components/admin/ScoreCard.tsx`
+- Create `src/components/admin/ForecastConfigEditor.tsx`
+- Create admin pages under `src/app/admin/`
+- Create `src/lib/csv.ts`
+- Create `src/app/api/admin/export/[dataset]/route.ts`
 
-Modify only supporting files needed to wire admin layout/route protection and query boundaries. Do not implement Task 8 admin dashboard pages beyond minimal protected/admin landing support required to prove auth routing.
+Modify supporting query files as needed. Do not implement Task 9 public product explorer, expansion map, case studies, or motion work.
 
-## Required Task 7 Behavior
+## Required Task 8 Behavior
 
-Task 7 must provide:
+Task 8 must provide:
 
-1. Argon2id password hashing and verification using `@node-rs/argon2`.
-2. Opaque random session tokens and deterministic SHA-256 token hashes.
-3. Login and setup Zod schemas.
-4. Setup action that:
-   - Accepts name, email, password, setup key.
-   - Compares setup key to `env.ADMIN_SETUP_KEY`.
-   - Allows setup only when there are zero admin users.
-   - Hashes password with Argon2id.
-   - Creates an owner admin user.
-   - Sets a valid admin session cookie.
-   - Writes audit log `admin.setup.created_owner`.
-5. Login action that:
-   - Validates email/password.
-   - Applies rate limiting using `admin_login_attempts`.
-   - Verifies password.
-   - Creates an admin session.
-   - Sets a valid admin session cookie.
-   - Writes audit log `admin.auth.login`.
-6. Rate limiting that blocks more than 5 failed attempts for the same email or IP in 15 minutes.
-7. `requireAdmin()` guard that:
-   - Reads the session cookie.
-   - Hashes the token.
-   - Finds an active, non-expired session and active admin user.
-   - Redirects unauthenticated requests to `/admin/login`.
-8. `/api/admin/logout` that revokes the current session and clears the cookie.
-9. `/admin/setup` and `/admin/login` pages with accessible forms, focus states, loading, success/error states, and no public marketing copy.
+1. Admin shell:
+   - Sidebar routes: Overview, Opportunities, Contacts, Calculator, Forecast Configs, Forecast Runs, Waitlists, Activity, Settings.
+   - Header with current admin name and logout action.
+   - Mobile drawer-style navigation with visible focus states.
+2. `/admin` overview:
+   - New opportunities count.
+   - New opportunity applications count.
+   - New contact submissions count.
+   - Calculator submissions count.
+   - Active forecast config version.
+   - Recent activity.
+   - Only a small `View site` public link.
+3. Management pages:
+   - `/admin/opportunities`: list/search/filter by status, city, state, commercial intent.
+   - `/admin/opportunities/[id]`: full record, events, latest score, forecast runs, status update.
+   - `/admin/opportunities`: include `Published needs` and `Applications` tabs.
+   - `/admin/contacts`: contact submissions and status updates.
+   - `/admin/calculator`: calculator submissions and linked forecast runs.
+   - `/admin/forecast-configs`: active config, version list, compare two versions, create new version.
+   - `/admin/forecast-runs`: stored input/output/assumption snapshots.
+   - `/admin/waitlists`: waitlist entries.
+   - `/admin/activity`: audit and activity logs.
+   - `/admin/settings`: admin account overview and setup status.
+4. Forecast config editor:
+   - Edit commercial, behavioral, venue multiplier, geographic multiplier, and operational assumption categories.
+   - Saving creates a new `forecast_config_versions` row and never mutates an existing version.
+5. CSV exports:
+   - Create `src/lib/csv.ts`.
+   - `/api/admin/export/[dataset]` supports `opportunities`, `opportunity-applications`, `contacts`, `calculator`, `waitlists`, and `forecast-runs`.
+   - Export route must call `requireAdmin()` and write audit log `admin.export.created`.
 
 ## TDD Guidance
 
 Write failing tests before production code.
 
-Recommended test file:
+Recommended tests:
 
-`src/tests/features/admin-auth.test.ts`
+- `toCsv()` quotes values, escapes quotes, preserves headers, and returns an empty string for empty rows.
+- Export route rejects unsupported datasets.
+- Export route requires admin and writes `admin.export.created`.
+- Admin dashboard query helpers return overview counts and active forecast config version.
+- Forecast config save action creates a new version instead of mutating the existing version.
+- Status update actions require admin and write activity/audit records.
 
-Recommended RED assertions:
-
-- Argon2id password hashing verifies the original password and rejects a different password.
-- Session token hashing is deterministic for the same token and does not equal the plain token.
-- Login schema rejects invalid email and short password.
-- Setup schema requires the setup key.
-- Login action records failed attempts and returns generic errors.
-- Setup action rejects an invalid setup key.
-- Setup action creates an owner when no admin exists.
-
-Run RED before implementation:
-
-```bash
-npm run test -- src/tests/features/admin-auth.test.ts
-```
-
-Expected before implementation: tests fail because the admin-auth modules/actions do not exist yet.
+Run targeted RED tests before implementation, then implement the smallest code needed to pass.
 
 ## Required Verification
 
 After implementation, run:
 
 ```bash
-npm run test -- src/tests/features/admin-auth.test.ts
 npm run typecheck
 npm run lint
 npm run build
 git diff --check
 ```
 
-Run full tests if shared env/query/action patterns changed:
+Run full tests if shared query/action/export patterns changed:
 
 ```bash
 npm test
@@ -227,6 +238,7 @@ npm test
 Supabase/local DB:
 
 - Check Docker first. If Docker remains unavailable, record the exact failure and do not claim local DB reset passed.
+- Check remote project health and remote migration status/dry-run before any live DB-dependent browser success claims.
 - If Docker is available, run:
 
 ```bash
@@ -237,28 +249,29 @@ npx supabase db reset
 Browser verification:
 
 1. Start the app with `npm run dev` or use an existing dev server for this repo.
-2. Open `/admin/setup`.
-3. Create an owner using local `ADMIN_SETUP_KEY`.
-4. Log out through `/api/admin/logout`.
-5. Open `/admin/login`.
-6. Log in with the owner account.
-7. Confirm `/admin` is protected before login and loads only after login.
-8. Confirm desktop and mobile have no horizontal overflow or text overlap.
+2. Log in as admin. If local DB is unavailable, auth success is blocked; report it and rely on tests/mocks only for DB behavior.
+3. Open every Task 8 admin route.
+4. Search and filter opportunities.
+5. Create a published opportunity post for `Looking for operators`.
+6. Confirm the published post appears on `/business-solutions` while logged out.
+7. Change a contact status.
+8. Create a new forecast config version.
+9. Export opportunities CSV.
+10. Confirm unauthenticated `/admin/opportunities` redirects to `/admin/login`.
+11. Confirm desktop and mobile have no horizontal overflow or text overlap.
 
-If local DB is unavailable, browser auth success is blocked. Report that explicitly and rely on tests/mocks only for DB behavior.
-
-## Commit Task 7
+## Commit Task 8
 
 After fresh verification:
 
 ```bash
-git add src/features/admin-auth src/app/admin src/app/api/admin/logout src/tests/features/admin-auth.test.ts
-git commit -m "feat: add secure admin login"
+git add src/components/admin src/app/admin src/app/api/admin/export src/lib/csv.ts src/db/queries src/features src/tests
+git commit -m "feat: add admin operations dashboard"
 ```
 
 Then overwrite `docs/superpowers/prompts/NEXT_SESSION.md` with the next paste-ready prompt for:
 
-`Task 8: Admin Dashboard, Operations Views, And Exports`
+`Task 9: Product Explorer, Expansion Map, Case Study Framework, And Motion Layer`
 
 Include what actually happened, verification status, commit hash, blockers/deviations, and exact next scope.
 
@@ -271,12 +284,13 @@ git commit -m "docs: add next session handoff"
 
 ## Final Response Requirements
 
-In the final response for Task 7, report:
+In the final response for Task 8, report:
 
 - The completed task.
 - Verification results with commands and pass/fail status.
 - Commit hash or hashes.
 - Path to `docs/superpowers/prompts/NEXT_SESSION.md`.
 - Whether Supabase DB reset was run or blocked.
-- Whether browser auth success was verified or blocked.
+- Whether remote DB migrations were current.
+- Whether browser admin success was verified or blocked.
 - Whether any work remains or was blocked.
