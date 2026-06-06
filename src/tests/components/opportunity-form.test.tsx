@@ -48,6 +48,7 @@ describe("OpportunityForm", () => {
     const formData = new FormData(form);
     expect(formData.get("city")).toBe("Mumbai");
     expect(formData.get("state")).toBe("Maharashtra");
+    expect(formData.getAll("locationTypes")).toEqual(["gym"]);
     expect(formData.get("accessMethod")).toBe("Direct access to the facility manager.");
   });
 });

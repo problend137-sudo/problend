@@ -376,6 +376,9 @@ export function OpportunityForm({
       <input name="electricityReadiness" type="hidden" value={electricityReadiness} />
       <input name="internetReadiness" type="hidden" value={internetReadiness} />
       <input name="commercialIntent" type="hidden" value={commercialIntent} />
+      {kind !== "introduction" && kind !== "open_brief"
+        ? locationTypes.map((locationType) => <input key={locationType} name="locationTypes" type="hidden" value={locationType} />)
+        : null}
       {kind === "introduction" ? <input name="locationTypes" type="hidden" value="strategic_introduction" /> : null}
       {kind === "open_brief" ? <input name="locationTypes" type="hidden" value="strategic_introduction" /> : null}
       <HoneypotField />
@@ -446,7 +449,7 @@ export function OpportunityForm({
                 <p className="text-sm font-bold text-slate-700">Venue type</p>
                 <CheckboxGroup
                   disabled={controlsDisabled}
-                  name="locationTypes"
+                  name="locationTypesPicker"
                   onChange={setLocationTypes}
                   options={venueLocationOptions}
                   values={locationTypes}
@@ -504,7 +507,7 @@ export function OpportunityForm({
                 <p className="text-sm font-bold text-slate-700">Network type</p>
                 <CheckboxGroup
                   disabled={controlsDisabled}
-                  name="locationTypes"
+                  name="locationTypesPicker"
                   onChange={setLocationTypes}
                   options={networkLocationOptions}
                   values={locationTypes}
