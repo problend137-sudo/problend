@@ -159,7 +159,8 @@ export const platformAcquisitionContent = {
   },
   actions: {
     primary: "Share an opportunity",
-    secondary: "See open opportunities"
+    secondary: "See open opportunities",
+    estimate: "Run placement estimate"
   },
   formPrompt: "What do you have?",
   opportunityTypes: [

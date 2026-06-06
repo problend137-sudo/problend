@@ -84,7 +84,8 @@ describe("ProBlend content preservation", () => {
     expect(platformAcquisitionContent.formPrompt).toBe("What do you have?");
     expect(platformAcquisitionContent.actions).toEqual({
       primary: "Share an opportunity",
-      secondary: "See open opportunities"
+      secondary: "See open opportunities",
+      estimate: "Run placement estimate"
     });
     expect(platformAcquisitionContent.opportunityTypes.map((item) => item.label)).toEqual([
       "A venue",
@@ -107,6 +108,7 @@ describe("ProBlend content preservation", () => {
       platformAcquisitionContent.formPrompt,
       platformAcquisitionContent.actions.primary,
       platformAcquisitionContent.actions.secondary,
+      platformAcquisitionContent.actions.estimate,
       ...platformAcquisitionContent.opportunityTypes.flatMap((item) => [item.label, item.body]),
       platformAcquisitionContent.board.title,
       platformAcquisitionContent.board.body,

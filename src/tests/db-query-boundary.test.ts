@@ -11,10 +11,15 @@ const expectedExports = {
   admin: {
     module: adminQueries,
     names: [
+      "countAdminUsers",
+      "countRecentFailedLoginAttempts",
       "createAdminSession",
       "createAdminUser",
+      "getActiveAdminSessionByHash",
       "getAdminByEmail",
       "getAdminById",
+      "recordAdminLoginAttempt",
+      "updateAdminLastLogin",
       "revokeAdminSession"
     ]
   },

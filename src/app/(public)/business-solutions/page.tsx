@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { OpportunityForm } from "@/components/public/OpportunityForm";
 import { OpportunityPostList } from "@/components/public/OpportunityPostList";
 import { problendAssets } from "@/content/assets";
-import { platformAcquisitionContent, routeMetadata } from "@/content/site";
+import { platformAcquisitionContent, publicCtas, routeMetadata } from "@/content/site";
 
 export const metadata: Metadata = routeMetadata.businessSolutions;
 export const dynamic = "force-dynamic";
@@ -52,6 +54,12 @@ export default function BusinessSolutionsPage() {
               >
                 {platformAcquisitionContent.actions.secondary}
               </a>
+              <Link
+                className="inline-flex min-h-11 items-center border border-[var(--pb-line)] px-5 text-sm font-extrabold text-[var(--pb-cream)] transition-colors duration-200 hover:border-[var(--pb-green)] hover:text-[var(--pb-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)]"
+                href={publicCtas.placementEstimate.href as Route}
+              >
+                {platformAcquisitionContent.actions.estimate}
+              </Link>
             </div>
           </div>
 
