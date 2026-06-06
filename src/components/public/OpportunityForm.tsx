@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { submitOpportunityAction } from "@/features/opportunities/actions";
 
 type ActionState =
@@ -90,6 +90,18 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function subscribeToHydration() {
+  return () => {};
+}
+
+function getHydratedSnapshot() {
+  return true;
+}
+
+function getServerHydratedSnapshot() {
+  return false;
+}
+
 function FieldError({ errors, name }: { errors?: Record<string, string[]>; name: string }) {
   const message = errors?.[name]?.[0];
 
@@ -170,26 +182,38 @@ function getDefaults(kind: OpportunityKind) {
 function OptionButton({
   checked,
   children,
+  disabled = false,
   name,
   onSelect,
   value
 }: {
   checked: boolean;
   children: ReactNode;
+  disabled?: boolean;
   name: string;
   onSelect: () => void;
   value: string;
 }) {
   return (
     <label
+      aria-disabled={disabled}
       className={cx(
         "flex min-h-14 cursor-pointer items-start gap-3 border p-4 text-left transition-colors duration-200",
+        disabled && "cursor-not-allowed opacity-65",
         checked
           ? "border-slate-950 bg-slate-950 text-white"
           : "border-slate-300 bg-white text-slate-700 hover:border-slate-950"
       )}
     >
-      <input checked={checked} className="mt-1 size-5 shrink-0 accent-[var(--pb-green)]" name={name} onChange={onSelect} type="radio" value={value} />
+      <input
+        checked={checked}
+        className="mt-1 size-5 shrink-0 accent-[var(--pb-green)]"
+        disabled={disabled}
+        name={name}
+        onChange={onSelect}
+        type="radio"
+        value={value}
+      />
       <span>{children}</span>
     </label>
   );
@@ -197,12 +221,14 @@ function OptionButton({
 
 function RadioGroup({
   columns = "sm:grid-cols-2",
+  disabled = false,
   name,
   onChange,
   options,
   value
 }: {
   columns?: string;
+  disabled?: boolean;
   name: string;
   onChange: (value: string) => void;
   options: ChoiceOption[];
@@ -211,7 +237,14 @@ function RadioGroup({
   return (
     <div className={`grid gap-3 ${columns}`}>
       {options.map((option) => (
-        <OptionButton checked={value === option.value} key={option.value} name={name} onSelect={() => onChange(option.value)} value={option.value}>
+        <OptionButton
+          checked={value === option.value}
+          disabled={disabled}
+          key={option.value}
+          name={name}
+          onSelect={() => onChange(option.value)}
+          value={option.value}
+        >
           <span className="block text-sm font-bold leading-5">{option.label}</span>
           {option.body ? <span className="mt-1 block text-sm leading-5 opacity-80">{option.body}</span> : null}
         </OptionButton>
@@ -221,11 +254,13 @@ function RadioGroup({
 }
 
 function CheckboxGroup({
+  disabled = false,
   name,
   onChange,
   options,
   values
 }: {
+  disabled?: boolean;
   name: string;
   onChange: (values: string[]) => void;
   options: ChoiceOption[];
@@ -238,8 +273,10 @@ function CheckboxGroup({
 
         return (
           <label
+            aria-disabled={disabled}
             className={cx(
               "flex min-h-12 cursor-pointer items-center gap-3 border p-3 text-sm font-bold transition-colors duration-200",
+              disabled && "cursor-not-allowed opacity-65",
               selected ? "border-slate-950 bg-slate-950 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-950"
             )}
             key={option.value}
@@ -247,6 +284,7 @@ function CheckboxGroup({
             <input
               checked={selected}
               className="size-5 shrink-0 accent-[var(--pb-green)]"
+              disabled={disabled}
               name={name}
               onChange={() => {
                 if (selected) {
@@ -278,6 +316,7 @@ export function OpportunityForm({
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(submitOpportunityAction, initialState);
+  const isHydrated = useSyncExternalStore(subscribeToHydration, getHydratedSnapshot, getServerHydratedSnapshot);
   const [stepIndex, setStepIndex] = useState(0);
   const [kind, setKind] = useState<OpportunityKind>(() => getInitialKind(mode, initialKind));
   const defaults = useMemo(() => getDefaults(kind), [kind]);
@@ -290,6 +329,7 @@ export function OpportunityForm({
   const submitKind = kind === "open_brief" ? "introduction" : kind;
   const steps = kind === "open_brief" ? ["Type", "Board"] : ["Type", "Details", "Contact"];
   const progress = `${Math.round(((stepIndex + 1) / steps.length) * 100)}%`;
+  const controlsDisabled = !isHydrated || isPending;
 
   useEffect(() => {
     if (state?.ok) {
@@ -298,6 +338,10 @@ export function OpportunityForm({
   }, [state]);
 
   function selectKind(nextKind: OpportunityKind) {
+    if (controlsDisabled) {
+      return;
+    }
+
     const nextDefaults = getDefaults(nextKind);
     setKind(nextKind);
     setLocationTypes(nextDefaults.locationTypes);
@@ -309,8 +353,12 @@ export function OpportunityForm({
   }
 
   function goToStep(nextIndex: number) {
+    if (controlsDisabled) {
+      return;
+    }
+
     setStepIndex(Math.min(Math.max(nextIndex, 0), steps.length - 1));
-    formRef.current?.scrollIntoView({ block: "start" });
+    formRef.current?.scrollIntoView?.({ block: "start" });
   }
 
   return (
@@ -353,7 +401,14 @@ export function OpportunityForm({
           </div>
           <div className="grid gap-3">
             {opportunityKinds.map((option) => (
-              <OptionButton checked={kind === option.value} key={option.value} name="kindPicker" onSelect={() => selectKind(option.value)} value={option.value}>
+              <OptionButton
+                checked={kind === option.value}
+                disabled={controlsDisabled}
+                key={option.value}
+                name="kindPicker"
+                onSelect={() => selectKind(option.value)}
+                value={option.value}
+              >
                 <span className="block text-base font-extrabold leading-6">{option.label}</span>
                 <span className="mt-1 block text-sm leading-6 opacity-80">{option.body}</span>
               </OptionButton>
@@ -391,7 +446,13 @@ export function OpportunityForm({
             <>
               <div className="grid gap-3">
                 <p className="text-sm font-bold text-slate-700">Venue type</p>
-                <CheckboxGroup name="locationTypes" onChange={setLocationTypes} options={venueLocationOptions} values={locationTypes} />
+                <CheckboxGroup
+                  disabled={controlsDisabled}
+                  name="locationTypes"
+                  onChange={setLocationTypes}
+                  options={venueLocationOptions}
+                  values={locationTypes}
+                />
                 <FieldError errors={fieldErrors} name="locationTypes" />
               </div>
               <LocationFields fieldErrors={fieldErrors} requireState />
@@ -400,14 +461,36 @@ export function OpportunityForm({
                 <textarea className={`${inputClass} min-h-28 resize-y py-3`} name="accessMethod" />
                 <FieldError errors={fieldErrors} name="accessMethod" />
               </label>
-              <RadioField label="Relationship" name="relationshipStrengthPicker" onChange={setRelationshipStrength} options={relationshipOptions} value={relationshipStrength} />
+              <RadioField
+                disabled={controlsDisabled}
+                label="Relationship"
+                name="relationshipStrengthPicker"
+                onChange={setRelationshipStrength}
+                options={relationshipOptions}
+                value={relationshipStrength}
+              />
               <VenueScaleFields fieldErrors={fieldErrors} />
               <div className="grid gap-5 md:grid-cols-2">
-                <RadioField label="Electricity" name="electricityReadinessPicker" onChange={setElectricityReadiness} options={readinessOptions} value={electricityReadiness} />
-                <RadioField label="Internet" name="internetReadinessPicker" onChange={setInternetReadiness} options={readinessOptions} value={internetReadiness} />
+                <RadioField
+                  disabled={controlsDisabled}
+                  label="Electricity"
+                  name="electricityReadinessPicker"
+                  onChange={setElectricityReadiness}
+                  options={readinessOptions}
+                  value={electricityReadiness}
+                />
+                <RadioField
+                  disabled={controlsDisabled}
+                  label="Internet"
+                  name="internetReadinessPicker"
+                  onChange={setInternetReadiness}
+                  options={readinessOptions}
+                  value={internetReadiness}
+                />
               </div>
               <RadioField
                 columns="sm:grid-cols-4"
+                disabled={controlsDisabled}
                 label="Preferred model"
                 name="commercialIntentPicker"
                 onChange={setCommercialIntent}
@@ -421,7 +504,13 @@ export function OpportunityForm({
             <>
               <div className="grid gap-3">
                 <p className="text-sm font-bold text-slate-700">Network type</p>
-                <CheckboxGroup name="locationTypes" onChange={setLocationTypes} options={networkLocationOptions} values={locationTypes} />
+                <CheckboxGroup
+                  disabled={controlsDisabled}
+                  name="locationTypes"
+                  onChange={setLocationTypes}
+                  options={networkLocationOptions}
+                  values={locationTypes}
+                />
                 <FieldError errors={fieldErrors} name="locationTypes" />
               </div>
               <LocationFields fieldErrors={fieldErrors} />
@@ -435,8 +524,14 @@ export function OpportunityForm({
                 <textarea className={`${inputClass} min-h-24 resize-y py-3`} name="reachDescription" />
                 <FieldError errors={fieldErrors} name="reachDescription" />
               </label>
-              <label className="flex min-h-12 items-center gap-3 border border-slate-300 bg-white p-4 text-sm font-bold text-slate-700">
-                <input className="size-5 accent-[var(--pb-green)]" name="hasMultiCityAccess" type="checkbox" value="on" />
+              <label
+                aria-disabled={controlsDisabled}
+                className={cx(
+                  "flex min-h-12 items-center gap-3 border border-slate-300 bg-white p-4 text-sm font-bold text-slate-700",
+                  controlsDisabled && "cursor-not-allowed opacity-65"
+                )}
+              >
+                <input className="size-5 accent-[var(--pb-green)]" disabled={controlsDisabled} name="hasMultiCityAccess" type="checkbox" value="on" />
                 Multi-city access
               </label>
             </>
@@ -450,7 +545,14 @@ export function OpportunityForm({
                 <textarea className={`${inputClass} min-h-28 resize-y py-3`} name="accessMethod" />
                 <FieldError errors={fieldErrors} name="accessMethod" />
               </label>
-              <RadioField label="Relationship" name="relationshipStrengthPicker" onChange={setRelationshipStrength} options={relationshipOptions} value={relationshipStrength} />
+              <RadioField
+                disabled={controlsDisabled}
+                label="Relationship"
+                name="relationshipStrengthPicker"
+                onChange={setRelationshipStrength}
+                options={relationshipOptions}
+                value={relationshipStrength}
+              />
             </>
           ) : null}
         </section>
@@ -476,7 +578,7 @@ export function OpportunityForm({
         <div className="flex flex-wrap gap-3">
           <button
             className="min-h-11 border border-slate-300 px-5 text-sm font-extrabold text-slate-700 transition-colors duration-200 hover:border-slate-950 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={isPending || stepIndex === 0}
+            disabled={controlsDisabled || stepIndex === 0}
             onClick={() => goToStep(stepIndex - 1)}
             type="button"
           >
@@ -485,7 +587,7 @@ export function OpportunityForm({
           {stepIndex < steps.length - 1 ? (
             <button
               className="min-h-11 border border-slate-950 bg-slate-950 px-6 text-sm font-extrabold text-white transition-colors duration-200 hover:bg-[var(--pb-green)] hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isPending}
+              disabled={controlsDisabled}
               onClick={() => goToStep(stepIndex + 1)}
               type="button"
             >
@@ -494,7 +596,7 @@ export function OpportunityForm({
           ) : kind === "open_brief" ? null : (
             <button
               className="min-h-11 border border-slate-950 bg-slate-950 px-6 text-sm font-extrabold text-white transition-colors duration-200 hover:bg-[var(--pb-green)] hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-[var(--pb-green)] disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isPending}
+              disabled={controlsDisabled}
               type="submit"
             >
               {isPending ? "Submitting..." : "Submit"}
@@ -539,6 +641,7 @@ function LocationFields({
 
 function RadioField({
   columns,
+  disabled = false,
   label,
   name,
   onChange,
@@ -546,6 +649,7 @@ function RadioField({
   value
 }: {
   columns?: string;
+  disabled?: boolean;
   label: string;
   name: string;
   onChange: (value: string) => void;
@@ -555,7 +659,7 @@ function RadioField({
   return (
     <div className="grid gap-3">
       <p className="text-sm font-bold text-slate-700">{label}</p>
-      <RadioGroup columns={columns} name={name} onChange={onChange} options={options} value={value} />
+      <RadioGroup columns={columns} disabled={disabled} name={name} onChange={onChange} options={options} value={value} />
     </div>
   );
 }
